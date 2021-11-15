@@ -1,0 +1,71 @@
+// Copyright 2021 Nikita Fediuchin. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#pragma once
+#include <assert.h>
+
+#define __LOGY__
+
+#define LOGY_VERSION_MAJOR @logy_VERSION_MAJOR@
+#define LOGY_VERSION_MINOR @logy_VERSION_MINOR@
+#define LOGY_VERSION_PATCH @logy_VERSION_PATCH@
+
+typedef enum LogyResult
+{
+	SUCCESS_LOGY_RESULT = 0,
+	FAILED_TO_ALLOCATE_LOGY_RESULT = 1,
+	FAILED_TO_OPEN_FILE_LOGY_RESULT = 2,
+	LOGY_RESULT_COUNT = 3,
+} LogyResult;
+
+typedef enum LogLevel
+{
+	OFF_LOG_LEVEL = 0,
+	FATAL_LOG_LEVEL = 1,
+	ERROR_LOG_LEVEL = 2,
+	WARN_LOG_LEVEL = 3,
+	INFO_LOG_LEVEL = 4,
+	DEBUG_LOG_LEVEL = 5,
+	TRACE_LOG_LEVEL = 6,
+	ALL_LOG_LEVEL = 7,
+	LOG_LEVEL_COUNT = 8,
+} LogLevel;
+
+inline static const char* logyResultToString(
+	LogyResult result)
+{
+	switch (result)
+	{
+	default:
+		return "Unknown logy result";
+	case SUCCESS_LOGY_RESULT:
+		return "Success";
+	case FAILED_TO_ALLOCATE_LOGY_RESULT:
+		return "Failed to allocate";
+	case FAILED_TO_OPEN_FILE_LOGY_RESULT:
+		return "Failed to open file";
+	}
+}
+
+static const char* const logLevelStrings[LOG_LEVEL_COUNT] = {
+    "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE", "ALL",
+};
+
+inline static const char* logLevelToString(
+	LogLevel level)
+{
+    assert(level >= OFF_LOG_LEVEL);
+    assert(level <= ALL_LOG_LEVEL);
+    return logLevelStrings[level];
+}
