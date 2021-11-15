@@ -150,13 +150,23 @@ void logMessage(
 	}
 
 	time_t rawTime;
-	struct tm timeInfo;
-
 	time(&rawTime);
 
-	localtime_r(
-		&rawTime,
-		&timeInfo);
+#if __linux__ || __APPLE__
+	struct tm timeInfo =
+		*localtime(&rawTime);
+#elif _WIN32
+	struct tm timeInfo;
+
+	errno_t error = localtime_s(
+		&timeInfo,
+		&rawTime);
+
+	if (error != 0)
+		avort();
+#else
+#error Unknown operating system
+#endif
 
 	FILE* file = logger->file;
 
