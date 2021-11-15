@@ -163,7 +163,7 @@ void logMessage(
 		&rawTime);
 
 	if (error != 0)
-		avort();
+		abort();
 #else
 #error Unknown operating system
 #endif
