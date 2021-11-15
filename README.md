@@ -26,4 +26,5 @@ cmake --build build/
 ```
 
 ## Third-party
+* [mpio](https://github.com/cfnptr/mpio/) (Apache-2.0 License)
 * [mpmt](https://github.com/cfnptr/mpmt/) (Apache-2.0 License)
