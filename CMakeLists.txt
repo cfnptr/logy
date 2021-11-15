@@ -17,6 +17,9 @@ project(logy
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
 
+set(MPMT_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory(libraries/mpmt)
+
 configure_file(
 	cmake/defines.h.in
 	logy/defines.h)
