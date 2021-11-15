@@ -150,22 +150,25 @@ void logMessage(
 	}
 
 	time_t rawTime;
+	struct tm timeInfo;
+
 	time(&rawTime);
 
-	struct tm* timeInfo =
-		localtime(&rawTime);
+	localtime_r(
+		&rawTime,
+		&timeInfo);
 
 	FILE* file = logger->file;
 
 	fprintf(
 		file,
 		"[%d-%d-%d %d:%d:%d] [%s]: ",
-		timeInfo->tm_year + 1900,
-		timeInfo->tm_mon + 1,
-		timeInfo->tm_mday,
-		timeInfo->tm_hour,
-		timeInfo->tm_min,
-		timeInfo->tm_sec,
+		timeInfo.tm_year + 1900,
+		timeInfo.tm_mon + 1,
+		timeInfo.tm_mday,
+		timeInfo.tm_hour,
+		timeInfo.tm_min,
+		timeInfo.tm_sec,
 		logLevelToString(level));
 
 	va_list args;
@@ -181,12 +184,12 @@ void logMessage(
 		fprintf(
 			stdout,
 			"[%d-%d-%d %d:%d:%d] [%s]: ",
-			timeInfo->tm_year + 1900,
-			timeInfo->tm_mon + 1,
-			timeInfo->tm_mday,
-			timeInfo->tm_hour,
-			timeInfo->tm_min,
-			timeInfo->tm_sec,
+			timeInfo.tm_year + 1900,
+			timeInfo.tm_mon + 1,
+			timeInfo.tm_mday,
+			timeInfo.tm_hour,
+			timeInfo.tm_min,
+			timeInfo.tm_sec,
 			logLevelToString(level));
 
 		va_start(args, fmt);
