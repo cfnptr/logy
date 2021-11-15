@@ -29,6 +29,7 @@ configure_file(
 add_library(logy STATIC
 	source/logger.c)
 target_link_libraries(logy PUBLIC
+	mpio
 	mpmt)
 target_include_directories(logy PUBLIC
 	${PROJECT_BINARY_DIR}
