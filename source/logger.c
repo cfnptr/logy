@@ -172,7 +172,7 @@ void logMessage(
 
 	fprintf(
 		file,
-		"[%d-%d-%d %d:%d:%d] [%s]: ",
+		"[%d-%02d-%02d %02d:%02d:%02d] [%s]: ",
 		timeInfo.tm_year + 1900,
 		timeInfo.tm_mon + 1,
 		timeInfo.tm_mday,
@@ -193,7 +193,7 @@ void logMessage(
 	{
 		fprintf(
 			stdout,
-			"[%d-%d-%d %d:%d:%d] [%s]: ",
+			"[%d-%02d-%02d %02d:%02d:%02d] [%s]: ",
 			timeInfo.tm_year + 1900,
 			timeInfo.tm_mon + 1,
 			timeInfo.tm_mday,
