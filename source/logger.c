@@ -106,7 +106,7 @@ void setLoggerLevel(
 	unlockMutex(mutex);
 }
 
-LogLevel getLoggerLogToStdout(Logger logger)
+bool getLoggerLogToStdout(Logger logger)
 {
 	assert(logger != NULL);
 

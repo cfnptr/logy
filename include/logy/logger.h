@@ -23,11 +23,11 @@ typedef struct Logger* Logger;
 
 /*
  * Create a new logger instance.
- * Returns operation conf result.
+ * Returns operation logy result.
  *
  * filePath - logger file path string.
  * logToConsole - also log to stdout.
- * confReader - pointer to the logger instance.
+ * logger - pointer to the logger instance.
  */
 LogyResult createLogger(
 	const char* filePath,
@@ -67,7 +67,7 @@ void setLoggerLevel(
  *
  * logger - logger instance.
  */
-LogLevel getLoggerLogToStdout(Logger logger);
+bool getLoggerLogToStdout(Logger logger);
 
 /*
  * Log messages also to stdout.
