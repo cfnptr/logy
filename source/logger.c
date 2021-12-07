@@ -129,11 +129,11 @@ void setLoggerLogToStdout(
 	unlockMutex(mutex);
 }
 
-void logMessage(
+void logVaMessage(
 	Logger logger,
 	LogLevel level,
 	const char* fmt,
-	...)
+	va_list args)
 {
 	assert(logger != NULL);
 	assert(level > OFF_LOG_LEVEL);
@@ -168,27 +168,6 @@ void logMessage(
 #error Unknown operating system
 #endif
 
-	FILE* file = logger->file;
-
-	fprintf(
-		file,
-		"[%d-%02d-%02d %02d:%02d:%02d] [%s]: ",
-		timeInfo.tm_year + 1900,
-		timeInfo.tm_mon + 1,
-		timeInfo.tm_mday,
-		timeInfo.tm_hour,
-		timeInfo.tm_min,
-		timeInfo.tm_sec,
-		logLevelToString(level));
-
-	va_list args;
-	va_start(args, fmt);
-	vfprintf(file, fmt, args);
-	va_end(args);
-
-	fputc('\n', file);
-	fflush(file);
-
 	if (logger->logToStdout == true)
 	{
 		fprintf(
@@ -202,13 +181,50 @@ void logMessage(
 			timeInfo.tm_sec,
 			logLevelToString(level));
 
-		va_start(args, fmt);
-		vfprintf(stdout, fmt, args);
-		va_end(args);
+		va_list stdArgs;
+		va_copy(stdArgs, args);
+		vfprintf(stdout, fmt, stdArgs);
+		va_end(stdArgs);
 
 		fputc('\n', stdout);
 		fflush(stdout);
 	}
 
+	FILE* file = logger->file;
+
+	fprintf(
+		file,
+		"[%d-%02d-%02d %02d:%02d:%02d] [%s]: ",
+		timeInfo.tm_year + 1900,
+		timeInfo.tm_mon + 1,
+		timeInfo.tm_mday,
+		timeInfo.tm_hour,
+		timeInfo.tm_min,
+		timeInfo.tm_sec,
+		logLevelToString(level));
+
+	vfprintf(file, fmt, args);
+	fputc('\n', file);
+	fflush(file);
 	unlockMutex(mutex);
+}
+
+void logMessage(
+	Logger logger,
+	LogLevel level,
+	const char* fmt,
+	...)
+{
+	assert(fmt != NULL);
+
+	va_list args;
+	va_start(args, fmt);
+
+	logVaMessage(
+		logger,
+		level,
+		fmt,
+		args);
+
+	va_end(args);
 }

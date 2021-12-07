@@ -87,6 +87,21 @@ void setLoggerLogToStdout(
  * logger - logger instance.
  * level - message logging level.
  * fmt - formatted message.
+ * args - message arguments.
+ */
+void logVaMessage(
+	Logger logger,
+	LogLevel level,
+	const char* fmt,
+	va_list args);
+
+/*
+ * Log message to the log.
+ * (Thread safe function)
+ *
+ * logger - logger instance.
+ * level - message logging level.
+ * fmt - formatted message.
  * ... - message arguments.
  */
 void logMessage(
