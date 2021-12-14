@@ -1,3 +1,6 @@
+# LOGY
+![CI](https://github.com/cfnptr/logy/actions/workflows/cmake.yml/badge.svg)
+
 ## Features
 * Logging to file, stdout
 * Logging levels (fatal - trace)
