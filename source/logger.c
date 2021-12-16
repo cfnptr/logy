@@ -18,7 +18,7 @@
 
 #include <time.h>
 
-struct Logger
+struct Logger_T
 {
 	LogLevel level;
 	bool logToStdout;
@@ -30,24 +30,24 @@ LogyResult createLogger(
 	const char* filePath,
 	LogLevel level,
 	bool logToStdout,
-	Logger* _logger)
+	Logger* logger)
 {
 	assert(filePath != NULL);
 	assert(level >= OFF_LOG_LEVEL);
 	assert(level <= ALL_LOG_LEVEL);
-	assert(_logger != NULL);
+	assert(logger != NULL);
 
-	Logger logger = malloc(
-		sizeof(struct Logger));
+	Logger loggerInstance = malloc(
+		sizeof(Logger_T));
 
-	if (logger == NULL)
+	if (loggerInstance == NULL)
 		return FAILED_TO_ALLOCATE_LOGY_RESULT;
 
 	Mutex mutex = createMutex();
 
 	if (mutex == NULL)
 	{
-		free(logger);
+		free(loggerInstance);
 		return  FAILED_TO_ALLOCATE_LOGY_RESULT;
 	}
 
@@ -58,16 +58,16 @@ LogyResult createLogger(
 	if (file == NULL)
 	{
 		destroyMutex(mutex);
-		free(logger);
+		free(loggerInstance);
 		return FAILED_TO_OPEN_FILE_LOGY_RESULT;
 	}
 
-	logger->level = level;
-	logger->logToStdout = logToStdout;
-	logger->mutex = mutex;
-	logger->file = file;
+	loggerInstance->level = level;
+	loggerInstance->logToStdout = logToStdout;
+	loggerInstance->mutex = mutex;
+	loggerInstance->file = file;
 
-	*_logger = logger;
+	*logger = loggerInstance;
 	return SUCCESS_LOGY_RESULT;
 }
 
@@ -91,7 +91,6 @@ LogLevel getLoggerLevel(Logger logger)
 	unlockMutex(mutex);
 	return level;
 }
-
 void setLoggerLevel(
 	Logger logger,
 	LogLevel level)
@@ -116,7 +115,6 @@ bool getLoggerLogToStdout(Logger logger)
 	unlockMutex(mutex);
 	return logToStdout;
 }
-
 void setLoggerLogToStdout(
 	Logger logger,
 	bool logToStdout)
@@ -208,7 +206,6 @@ void logVaMessage(
 	fflush(file);
 	unlockMutex(mutex);
 }
-
 void logMessage(
 	Logger logger,
 	LogLevel level,

@@ -18,8 +18,14 @@
 #include <stdarg.h>
 #include <stdbool.h>
 
-// Logger instance handle.
-typedef struct Logger* Logger;
+/*
+ * Logger structure.
+ */
+typedef struct Logger_T Logger_T;
+/*
+ * Logger instance.
+ */
+typedef Logger_T* Logger;
 
 /*
  * Create a new logger instance.
@@ -34,9 +40,8 @@ LogyResult createLogger(
 	LogLevel level,
 	bool logToStdout,
 	Logger* logger);
-
 /*
- * Destroy logger instance.
+ * Destroys logger instance.
  * logger - logger instance or NULL.
  */
 void destroyLogger(Logger logger);
@@ -48,7 +53,6 @@ void destroyLogger(Logger logger);
  * logger - logger instance.
  */
 LogLevel getLoggerLevel(Logger logger);
-
 /*
  * Set logger logging level.
  * Log only message <= log level.
@@ -68,7 +72,6 @@ void setLoggerLevel(
  * logger - logger instance.
  */
 bool getLoggerLogToStdout(Logger logger);
-
 /*
  * Log messages also to stdout.
  * (Thread safe function)
@@ -94,7 +97,6 @@ void logVaMessage(
 	LogLevel level,
 	const char* fmt,
 	va_list args);
-
 /*
  * Log message to the log.
  * (Thread safe function)
