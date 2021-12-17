@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #pragma once
+#include <stdint.h>
 #include <assert.h>
 
 #define __LOGY__
@@ -21,15 +22,25 @@
 #define LOGY_VERSION_MINOR @logy_VERSION_MINOR@
 #define LOGY_VERSION_PATCH @logy_VERSION_PATCH@
 
-typedef enum LogyResult
+/*
+ * LOGY results.
+ */
+typedef enum LogyResult_T
 {
 	SUCCESS_LOGY_RESULT = 0,
 	FAILED_TO_ALLOCATE_LOGY_RESULT = 1,
 	FAILED_TO_OPEN_FILE_LOGY_RESULT = 2,
 	LOGY_RESULT_COUNT = 3,
-} LogyResult;
+} LogyResult_T;
+/*
+ * LOGY result type.
+ */
+typedef uint8_t LogyResult;
 
-typedef enum LogLevel
+/*
+ * Log levels.
+ */
+typedef enum LogLevel_T
 {
 	OFF_LOG_LEVEL = 0,
 	FATAL_LOG_LEVEL = 1,
@@ -40,32 +51,48 @@ typedef enum LogLevel
 	TRACE_LOG_LEVEL = 6,
 	ALL_LOG_LEVEL = 7,
 	LOG_LEVEL_COUNT = 8,
-} LogLevel;
+} LogLevel_T;
+/*
+ * Log level type.
+ */
+typedef uint8_t LogLevel;
 
+/*
+ * LOGY result strings.
+ */
+static const char* const logyResultStrings[LOGY_RESULT_COUNT] = {
+	"Success",
+	"Failed to allocate",
+	"Failed to open file",
+};
+
+/*
+ * Returns LOGY result as string.
+ * result - LOGY result.
+ */
 inline static const char* logyResultToString(
 	LogyResult result)
 {
-	switch (result)
-	{
-	default:
-		return "Unknown logy result";
-	case SUCCESS_LOGY_RESULT:
-		return "Success";
-	case FAILED_TO_ALLOCATE_LOGY_RESULT:
-		return "Failed to allocate";
-	case FAILED_TO_OPEN_FILE_LOGY_RESULT:
-		return "Failed to open file";
-	}
+	if (result >= LOGY_RESULT_COUNT)
+		return "Unknown LOGY result";
+	return logyResultStrings[result];
 }
 
+/*
+ * Log level strings.
+ */
 static const char* const logLevelStrings[LOG_LEVEL_COUNT] = {
-    "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE", "ALL",
+	"OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE", "ALL",
 };
 
+/*
+ * Returns log level as string.
+ * level - log level.
+ */
 inline static const char* logLevelToString(
 	LogLevel level)
 {
-    assert(level >= OFF_LOG_LEVEL);
-    assert(level <= ALL_LOG_LEVEL);
-    return logLevelStrings[level];
+	if (level >= LOG_LEVEL_COUNT)
+		return "UNKNOWN";
+	return logLevelStrings[level];
 }

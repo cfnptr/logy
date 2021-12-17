@@ -33,7 +33,6 @@ LogyResult createLogger(
 	Logger* logger)
 {
 	assert(filePath != NULL);
-	assert(level >= OFF_LOG_LEVEL);
 	assert(level <= ALL_LOG_LEVEL);
 	assert(logger != NULL);
 
@@ -96,7 +95,6 @@ void setLoggerLevel(
 	LogLevel level)
 {
 	assert(logger != NULL);
-	assert(level >= OFF_LOG_LEVEL);
 	assert(level <= ALL_LOG_LEVEL);
 
 	Mutex mutex = logger->mutex;
@@ -134,7 +132,6 @@ void logVaMessage(
 	va_list args)
 {
 	assert(logger != NULL);
-	assert(level > OFF_LOG_LEVEL);
 	assert(level < ALL_LOG_LEVEL);
 	assert(fmt != NULL);
 
