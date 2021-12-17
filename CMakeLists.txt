@@ -31,6 +31,8 @@ project(logy
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
 
+option(LOGY_BUILD_SHARED "Build LOGY shared library" ON)
+
 add_subdirectory(libraries/mpio)
 
 set(MPMT_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -40,11 +42,28 @@ configure_file(
 	cmake/defines.h.in
 	logy/defines.h)
 
-add_library(logy STATIC
+set(LOGY_SOURCES
 	source/logger.c)
-target_link_libraries(logy PUBLIC
+
+add_library(logy-static STATIC
+	${LOGY_SOURCES})
+target_link_libraries(logy-static PUBLIC
 	mpio
 	mpmt)
-target_include_directories(logy PUBLIC
+target_include_directories(logy-static PUBLIC
 	${PROJECT_BINARY_DIR}
 	${PROJECT_SOURCE_DIR}/include)
+
+if (LOGY_BUILD_SHARED)
+	add_library(logy-shared SHARED
+		${LOGY_SOURCES})
+	set_target_properties(logy-shared PROPERTIES
+		OUTPUT_NAME "logy"
+		WINDOWS_EXPORT_ALL_SYMBOLS ON)
+	target_link_libraries(logy-shared PUBLIC
+		mpio
+		mpmt)
+	target_include_directories(logy-shared PUBLIC
+		${PROJECT_BINARY_DIR}
+		${PROJECT_SOURCE_DIR}/include)
+endif ()

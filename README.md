@@ -1,5 +1,7 @@
 # LOGY ![CI](https://github.com/cfnptr/logy/actions/workflows/cmake.yml/badge.svg)
 
+A library providing generic API for messages logging across different platforms.
+
 ## Features
 
 * Logging to file, stdout
@@ -23,6 +25,12 @@
 ```
 git clone --recursive https://github.com/cfnptr/logy
 ```
+
+## CMake options
+
+| Name              | Description               | Default value |
+|-------------------|---------------------------|---------------|
+| LOGY_BUILD_SHARED | Build LOGY shared library | `ON`          |
 
 ## Third-party
 
