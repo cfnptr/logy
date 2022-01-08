@@ -33,7 +33,7 @@ LogyResult createLogger(
 	Logger* logger)
 {
 	assert(filePath != NULL);
-	assert(level <= ALL_LOG_LEVEL);
+	assert(level < LOG_LEVEL_COUNT);
 	assert(logger != NULL);
 
 	Logger loggerInstance = malloc(
@@ -47,7 +47,7 @@ LogyResult createLogger(
 	if (mutex == NULL)
 	{
 		free(loggerInstance);
-		return  FAILED_TO_ALLOCATE_LOGY_RESULT;
+		return FAILED_TO_ALLOCATE_LOGY_RESULT;
 	}
 
 	FILE* file = openFile(
@@ -83,7 +83,6 @@ void destroyLogger(Logger logger)
 LogLevel getLoggerLevel(Logger logger)
 {
 	assert(logger != NULL);
-
 	Mutex mutex = logger->mutex;
 	lockMutex(mutex);
 	LogLevel level = logger->level;
@@ -96,7 +95,6 @@ void setLoggerLevel(
 {
 	assert(logger != NULL);
 	assert(level <= ALL_LOG_LEVEL);
-
 	Mutex mutex = logger->mutex;
 	lockMutex(mutex);
 	logger->level = level;
@@ -106,7 +104,6 @@ void setLoggerLevel(
 bool getLoggerLogToStdout(Logger logger)
 {
 	assert(logger != NULL);
-
 	Mutex mutex = logger->mutex;
 	lockMutex(mutex);
 	bool logToStdout = logger->logToStdout;
@@ -118,7 +115,6 @@ void setLoggerLogToStdout(
 	bool logToStdout)
 {
 	assert(logger != NULL);
-
 	Mutex mutex = logger->mutex;
 	lockMutex(mutex);
 	logger->logToStdout = logToStdout;
@@ -165,8 +161,7 @@ void logVaMessage(
 
 	if (logger->logToStdout == true)
 	{
-		fprintf(
-			stdout,
+		fprintf(stdout,
 			"[%d-%02d-%02d %02d:%02d:%02d] [%s]: ",
 			timeInfo.tm_year + 1900,
 			timeInfo.tm_mon + 1,
@@ -187,8 +182,7 @@ void logVaMessage(
 
 	FILE* file = logger->file;
 
-	fprintf(
-		file,
+	fprintf(file,
 		"[%d-%02d-%02d %02d:%02d:%02d] [%s]: ",
 		timeInfo.tm_year + 1900,
 		timeInfo.tm_mon + 1,
@@ -209,6 +203,8 @@ void logMessage(
 	const char* fmt,
 	...)
 {
+	assert(logger != NULL);
+	assert(level < ALL_LOG_LEVEL);
 	assert(fmt != NULL);
 
 	va_list args;
