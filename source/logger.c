@@ -32,19 +32,19 @@ LogyResult createLogger(
 	bool logToStdout,
 	Logger* logger)
 {
-	assert(filePath != NULL);
+	assert(filePath);
 	assert(level < LOG_LEVEL_COUNT);
-	assert(logger != NULL);
+	assert(logger);
 
 	Logger loggerInstance = malloc(
 		sizeof(Logger_T));
 
-	if (loggerInstance == NULL)
+	if (!loggerInstance)
 		return FAILED_TO_ALLOCATE_LOGY_RESULT;
 
 	Mutex mutex = createMutex();
 
-	if (mutex == NULL)
+	if (!mutex)
 	{
 		free(loggerInstance);
 		return FAILED_TO_ALLOCATE_LOGY_RESULT;
@@ -54,7 +54,7 @@ LogyResult createLogger(
 		filePath,
 		"a+");
 
-	if (file == NULL)
+	if (!file)
 	{
 		destroyMutex(mutex);
 		free(loggerInstance);
@@ -72,7 +72,7 @@ LogyResult createLogger(
 
 void destroyLogger(Logger logger)
 {
-	if (logger == NULL)
+	if (!logger)
 		return;
 
 	closeFile(logger->file);
@@ -82,7 +82,7 @@ void destroyLogger(Logger logger)
 
 LogLevel getLoggerLevel(Logger logger)
 {
-	assert(logger != NULL);
+	assert(logger);
 	Mutex mutex = logger->mutex;
 	lockMutex(mutex);
 	LogLevel level = logger->level;
@@ -93,7 +93,7 @@ void setLoggerLevel(
 	Logger logger,
 	LogLevel level)
 {
-	assert(logger != NULL);
+	assert(logger);
 	assert(level <= ALL_LOG_LEVEL);
 	Mutex mutex = logger->mutex;
 	lockMutex(mutex);
@@ -103,7 +103,7 @@ void setLoggerLevel(
 
 bool getLoggerLogToStdout(Logger logger)
 {
-	assert(logger != NULL);
+	assert(logger);
 	Mutex mutex = logger->mutex;
 	lockMutex(mutex);
 	bool logToStdout = logger->logToStdout;
@@ -114,7 +114,7 @@ void setLoggerLogToStdout(
 	Logger logger,
 	bool logToStdout)
 {
-	assert(logger != NULL);
+	assert(logger);
 	Mutex mutex = logger->mutex;
 	lockMutex(mutex);
 	logger->logToStdout = logToStdout;
@@ -127,9 +127,9 @@ void logVaMessage(
 	const char* fmt,
 	va_list args)
 {
-	assert(logger != NULL);
+	assert(logger);
 	assert(level < ALL_LOG_LEVEL);
-	assert(fmt != NULL);
+	assert(fmt);
 
 	Mutex mutex = logger->mutex;
 	lockMutex(mutex);
@@ -159,7 +159,7 @@ void logVaMessage(
 #error Unknown operating system
 #endif
 
-	if (logger->logToStdout == true)
+	if (logger->logToStdout)
 	{
 		fprintf(stdout,
 			"[%d-%02d-%02d %02d:%02d:%02d] [%s]: ",
@@ -203,9 +203,9 @@ void logMessage(
 	const char* fmt,
 	...)
 {
-	assert(logger != NULL);
+	assert(logger);
 	assert(level < ALL_LOG_LEVEL);
-	assert(fmt != NULL);
+	assert(fmt);
 
 	va_list args;
 	va_start(args, fmt);
