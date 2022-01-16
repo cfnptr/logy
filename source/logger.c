@@ -20,10 +20,10 @@
 
 struct Logger_T
 {
-	LogLevel level;
-	bool logToStdout;
 	Mutex mutex;
 	FILE* file;
+	LogLevel level;
+	bool logToStdout;
 };
 
 LogyResult createLogger(
@@ -61,10 +61,10 @@ LogyResult createLogger(
 		return FAILED_TO_OPEN_FILE_LOGY_RESULT;
 	}
 
-	loggerInstance->level = level;
-	loggerInstance->logToStdout = logToStdout;
 	loggerInstance->mutex = mutex;
 	loggerInstance->file = file;
+	loggerInstance->level = level;
+	loggerInstance->logToStdout = logToStdout;
 
 	*logger = loggerInstance;
 	return SUCCESS_LOGY_RESULT;
