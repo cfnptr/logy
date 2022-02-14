@@ -20,17 +20,17 @@ A library providing generic API for messages logging across different platforms.
 * [Git 2.30+](https://git-scm.com/)
 * [CMake 3.10+](https://cmake.org/)
 
+### CMake options
+
+| Name              | Description               | Default value |
+|-------------------|---------------------------|---------------|
+| LOGY_BUILD_SHARED | Build LOGY shared library | `ON`          |
+
 ## Cloning
 
 ```
 git clone --recursive https://github.com/cfnptr/logy
 ```
-
-## CMake options
-
-| Name              | Description               | Default value |
-|-------------------|---------------------------|---------------|
-| LOGY_BUILD_SHARED | Build LOGY shared library | `ON`          |
 
 ## Third-party
 
