@@ -44,12 +44,14 @@ configure_file(
 
 set(LOGY_SOURCES
 	source/logger.c)
+	
+set(LOGY_LINK_LIBRARIES
+	mpio mpmt)
 
 add_library(logy-static STATIC
 	${LOGY_SOURCES})
 target_link_libraries(logy-static PUBLIC
-	mpio
-	mpmt)
+	${LOGY_LINK_LIBRARIES})
 target_include_directories(logy-static PUBLIC
 	${PROJECT_BINARY_DIR}
 	${PROJECT_SOURCE_DIR}/include)
@@ -61,8 +63,7 @@ if (LOGY_BUILD_SHARED)
 		OUTPUT_NAME "logy"
 		WINDOWS_EXPORT_ALL_SYMBOLS ON)
 	target_link_libraries(logy-shared PUBLIC
-		mpio
-		mpmt)
+		${LOGY_LINK_LIBRARIES})
 	target_include_directories(logy-shared PUBLIC
 		${PROJECT_BINARY_DIR}
 		${PROJECT_SOURCE_DIR}/include)
