@@ -50,9 +50,7 @@ LogyResult createLogger(
 		return FAILED_TO_ALLOCATE_LOGY_RESULT;
 	}
 
-	FILE* file = openFile(
-		filePath,
-		"a+");
+	FILE* file = openFile(filePath, "a+");
 
 	if (!file)
 	{
@@ -75,7 +73,8 @@ void destroyLogger(Logger logger)
 	if (!logger)
 		return;
 
-	closeFile(logger->file);
+	if (logger->file)
+		closeFile(logger->file);
 	destroyMutex(logger->mutex);
 	free(logger);
 }
