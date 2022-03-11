@@ -35,6 +35,8 @@ option(LOGY_BUILD_SHARED "Build LOGY shared library" ON)
 
 add_subdirectory(libraries/mpio)
 
+set(MPMT_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(MPMT_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(MPMT_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(libraries/mpmt)
 
