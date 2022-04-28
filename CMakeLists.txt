@@ -48,7 +48,7 @@ set(LOGY_SOURCES
 	source/logger.c)
 	
 set(LOGY_LINK_LIBRARIES
-	mpio mpmt-static)
+	mpio-static mpmt-static)
 
 add_library(logy-static STATIC
 	${LOGY_SOURCES})
