@@ -13,70 +13,310 @@
 // limitations under the License.
 
 #include "logy/logger.h"
+
 #include "mpio/file.h"
+#include "mpio/directory.h"
+
 #include "mpmt/sync.h"
+#include "mpmt/thread.h"
+#include "mpmt/common.h"
 
 #include <time.h>
 
 struct Logger_T
 {
+	char* directoryPath;
+	char* filePath;
 	Mutex mutex;
-	FILE* file;
+	FILE* logFile;
+	Thread rotationThread;
+	double rotationTime;
 	LogLevel level;
 	bool logToStdout;
 };
 
+inline static char* createLogFilePath(const char* directoryPath)
+{
+	assert(directoryPath);
+
+	time_t rawTime;
+	time(&rawTime);
+
+#if __linux__ || __APPLE__
+	struct tm timeInfo =
+		*localtime(&rawTime);
+#elif _WIN32
+	struct tm timeInfo;
+
+	errno_t error = localtime_s(
+		&timeInfo,
+		&rawTime);
+
+	if (error != 0)
+		abort();
+#else
+#error Unknown operating system
+#endif
+
+	char nameBuffer[32];
+
+	int fileNameLength = snprintf(nameBuffer, 32,
+		"log_%d-%02d-%02d_%02d-%02d-%02d.txt",
+		timeInfo.tm_year + 1900,
+		timeInfo.tm_mon + 1,
+		timeInfo.tm_mday,
+		timeInfo.tm_hour,
+		timeInfo.tm_min,
+		timeInfo.tm_sec);
+
+	if (fileNameLength <= 0)
+		return NULL;
+
+	size_t directoryPathLength = strlen(directoryPath);
+
+	char* filePath = malloc((2 +
+		directoryPathLength + fileNameLength) * sizeof(char));
+
+	if (!filePath)
+		return NULL;
+
+	memcpy(filePath, directoryPath,
+		directoryPathLength * sizeof(char));
+	filePath[directoryPathLength] = '/';
+	memcpy(filePath + directoryPathLength + 1,
+		nameBuffer, fileNameLength * sizeof(char));
+	filePath[directoryPathLength + 1 + fileNameLength] = '\0';
+	return filePath;
+}
+static void onRotationUpdate(void* argument)
+{
+	assert(argument);
+	Logger logger = (Logger)argument;
+	Mutex mutex = logger->mutex;
+	const char* directoryPath = logger->directoryPath;
+	double timeDelay = getCurrentClock() + logger->rotationTime;
+
+	while (logger->rotationTime > 0.0)
+	{
+		double currentTime = getCurrentClock();
+
+		if (currentTime > timeDelay)
+		{
+			lockMutex(mutex);
+
+			char* newFilePath = createLogFilePath(directoryPath);
+
+			if (!newFilePath)
+			{
+				unlockMutex(mutex);
+				logMessage(logger, ERROR_LOG_LEVEL,
+					"Failed to allocate a new log file path string.");
+				return;
+			}
+
+			FILE* newLogFile = openFile(newFilePath, "a");
+
+			if (!newLogFile)
+			{
+				unlockMutex(mutex);
+				logMessage(logger, ERROR_LOG_LEVEL,
+					"Failed to open a new log file.");
+				free(newFilePath);
+				return;
+			}
+
+			char* oldFilePath = logger->filePath;
+			logger->filePath = newFilePath;
+			closeFile(logger->logFile);
+			logger->logFile = newLogFile;
+			timeDelay = currentTime + logger->rotationTime;
+			unlockMutex(mutex);
+
+			size_t oldFilePathLength = strlen(oldFilePath);
+			size_t bufferSize = oldFilePathLength * 2 + 32;
+			char* buffer = malloc(bufferSize * sizeof(char));
+
+			if (!buffer)
+			{
+				logMessage(logger, ERROR_LOG_LEVEL,
+					"Failed to allocate an old log file zip string.");
+				free(oldFilePath);
+				return;
+			}
+
+			int count = snprintf(
+				buffer,
+				bufferSize,
+				"tar -czf %.*s.tar.gz %.*s",
+				(int)oldFilePathLength,
+				oldFilePath,
+				(int)oldFilePathLength,
+				oldFilePath);
+
+			if (count <= 0)
+			{
+				logMessage(logger, ERROR_LOG_LEVEL,
+					"Failed to write old log file zip string.");
+				free(buffer);
+				free(oldFilePath);
+				return;
+			}
+
+			int result = system(buffer);
+			free(buffer);
+
+			if (result != 0)
+			{
+				logMessage(logger, ERROR_LOG_LEVEL,
+					"Failed to zip old log file.");
+				free(oldFilePath);
+				return;
+			}
+
+			remove(oldFilePath);
+			free(oldFilePath);
+		}
+
+		sleepThread(0.001);
+	}
+}
 LogyResult createLogger(
-	const char* filePath,
+	const char* _directoryPath,
 	LogLevel level,
 	bool logToStdout,
+	double rotationTime,
 	Logger* logger)
 {
-	assert(filePath);
+	assert(_directoryPath);
 	assert(level < LOG_LEVEL_COUNT);
+	assert(rotationTime >= 0.0);
 	assert(logger);
 
-	Logger loggerInstance = malloc(
-		sizeof(Logger_T));
+	Logger loggerInstance = calloc(
+		1, sizeof(Logger_T));
 
 	if (!loggerInstance)
 		return FAILED_TO_ALLOCATE_LOGY_RESULT;
+
+	loggerInstance->rotationTime = rotationTime;
+	loggerInstance->level = level;
+	loggerInstance->logToStdout = logToStdout;
+
+	size_t directoryPathLength = strlen(_directoryPath);
+
+	assert(_directoryPath[directoryPathLength - 1] != '/' &&
+		_directoryPath[directoryPathLength - 1] != '\\');
+
+	char* directoryPath = malloc((1 +
+		directoryPathLength) * sizeof(char));
+
+	if (!directoryPath)
+	{
+		destroyLogger(loggerInstance);
+		return FAILED_TO_ALLOCATE_LOGY_RESULT;
+	}
+
+	loggerInstance->directoryPath = directoryPath;
+
+	memcpy(directoryPath, _directoryPath,
+		directoryPathLength * sizeof(char));
+	directoryPath[directoryPathLength] = '\0';
+
+	createDirectory(directoryPath);
+
+	char* filePath = createLogFilePath(directoryPath);
+
+	if (!filePath)
+	{
+		destroyLogger(loggerInstance);
+		return FAILED_TO_ALLOCATE_LOGY_RESULT;
+	}
+
+	loggerInstance->filePath = filePath;
 
 	Mutex mutex = createMutex();
 
 	if (!mutex)
 	{
-		free(loggerInstance);
+		destroyLogger(loggerInstance);
 		return FAILED_TO_ALLOCATE_LOGY_RESULT;
 	}
 
-	FILE* file = openFile(filePath, "a+");
+	loggerInstance->mutex = mutex;
 
-	if (!file)
+	FILE* logFile = openFile(filePath, "a");
+
+	if (!logFile)
 	{
-		destroyMutex(mutex);
-		free(loggerInstance);
+		destroyLogger(loggerInstance);
 		return FAILED_TO_OPEN_FILE_LOGY_RESULT;
 	}
 
-	loggerInstance->mutex = mutex;
-	loggerInstance->file = file;
-	loggerInstance->level = level;
-	loggerInstance->logToStdout = logToStdout;
+	loggerInstance->logFile = logFile;
+
+	if (rotationTime > 0.0)
+	{
+		Thread rotationThread = createThread(
+			onRotationUpdate,
+			loggerInstance);
+
+		if (!rotationThread)
+		{
+			destroyLogger(loggerInstance);
+			return FAILED_TO_ALLOCATE_LOGY_RESULT;
+		}
+
+		loggerInstance->rotationThread = rotationThread;
+	}
+	else
+	{
+		loggerInstance->rotationThread = NULL;
+	}
 
 	*logger = loggerInstance;
 	return SUCCESS_LOGY_RESULT;
 }
-
 void destroyLogger(Logger logger)
 {
 	if (!logger)
 		return;
 
-	if (logger->file)
-		closeFile(logger->file);
+	Thread rotationThread = logger->rotationThread;
+
+	if (rotationThread)
+	{
+		logger->rotationTime = 0.0;
+		joinThread(rotationThread);
+		destroyThread(rotationThread);
+	}
+
+	if (logger->logFile)
+		closeFile(logger->logFile);
+
 	destroyMutex(logger->mutex);
+	free(logger->filePath);
+	free(logger->directoryPath);
 	free(logger);
+}
+
+const char* getLoggerDirectoryPath(Logger logger)
+{
+	assert(logger);
+	return logger->directoryPath;
+}
+const char* getLoggerFilePath(Logger logger)
+{
+	assert(logger);
+	Mutex mutex = logger->mutex;
+	lockMutex(mutex);
+	const char* filePath = logger->filePath;
+	unlockMutex(mutex);
+	return filePath;
+}
+double getLoggerRotationTime(Logger logger)
+{
+	assert(logger);
+	return logger->rotationTime;
 }
 
 LogLevel getLoggerLevel(Logger logger)
@@ -160,8 +400,7 @@ void logVaMessage(
 
 	if (logger->logToStdout)
 	{
-		fprintf(stdout,
-			"[%d-%02d-%02d %02d:%02d:%02d] [%s]: ",
+		printf("[%d-%02d-%02d %02d:%02d:%02d] [%s]: ",
 			timeInfo.tm_year + 1900,
 			timeInfo.tm_mon + 1,
 			timeInfo.tm_mday,
@@ -179,9 +418,9 @@ void logVaMessage(
 		fflush(stdout);
 	}
 
-	FILE* file = logger->file;
+	FILE* logFile = logger->logFile;
 
-	fprintf(file,
+	fprintf(logFile,
 		"[%d-%02d-%02d %02d:%02d:%02d] [%s]: ",
 		timeInfo.tm_year + 1900,
 		timeInfo.tm_mon + 1,
@@ -191,9 +430,9 @@ void logVaMessage(
 		timeInfo.tm_sec,
 		logLevelToString(level));
 
-	vfprintf(file, fmt, args);
-	fputc('\n', file);
-	fflush(file);
+	vfprintf(logFile, fmt, args);
+	fputc('\n', logFile);
+	fflush(logFile);
 	unlockMutex(mutex);
 }
 void logMessage(

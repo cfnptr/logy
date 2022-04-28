@@ -31,14 +31,17 @@ typedef Logger_T* Logger;
  * Create a new logger instance.
  * Returns operation logy result.
  *
- * filePath - logger file path string.
+ * directoryPath - logs directory path string.
+ * level - logging level, inclusive.
  * logToConsole - also log to stdout.
+ * rotationTime - log rotation delay time or 0. (seconds)
  * logger - pointer to the logger instance.
  */
 LogyResult createLogger(
-	const char* filePath,
+	const char* directoryPath,
 	LogLevel level,
 	bool logToStdout,
+	double rotationTime,
 	Logger* logger);
 /*
  * Destroys logger instance.
@@ -47,7 +50,29 @@ LogyResult createLogger(
 void destroyLogger(Logger logger);
 
 /*
- * Returns current logger log level.
+ * Returns logger directory path string.
+ * (Thread safe function)
+ *
+ * logger - logger instance.
+ */
+const char* getLoggerDirectoryPath(Logger logger);
+/*
+ * Returns logger file path string.
+ * (Thread safe function)
+ *
+ * logger - logger instance.
+ */
+const char* getLoggerFilePath(Logger logger);
+/*
+ * Returns current logger rotation delay time. (seconds)
+ * (Thread safe function)
+ *
+ * logger - logger instance.
+ */
+double getLoggerRotationTime(Logger logger);
+
+/*
+ * Returns current logger logging level.
  * (Thread safe function)
  *
  * logger - logger instance.
