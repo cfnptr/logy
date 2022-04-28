@@ -88,6 +88,53 @@ inline static char* createLogFilePath(const char* directoryPath)
 	filePath[directoryPathLength + 1 + fileNameLength] = '\0';
 	return filePath;
 }
+inline static void compressLogFile(
+	Logger logger,
+	const char* filePath)
+{
+	assert(logger);
+	assert(filePath);
+
+	size_t filePathLength = strlen(filePath);
+	size_t bufferSize = filePathLength * 2 + 32;
+	char* buffer = malloc(bufferSize * sizeof(char));
+
+	if (!buffer)
+	{
+		logMessage(logger, ERROR_LOG_LEVEL,
+			"Failed to allocate a log file zip string.");
+		return;
+	}
+
+	int count = snprintf(
+		buffer,
+		bufferSize,
+		"tar -czf %.*s.tar.gz %.*s",
+		(int)filePathLength,
+		filePath,
+		(int)filePathLength,
+		filePath);
+
+	if (count <= 0)
+	{
+		logMessage(logger, ERROR_LOG_LEVEL,
+			"Failed to write log file zip string.");
+		free(buffer);
+		return;
+	}
+
+	int result = system(buffer);
+	free(buffer);
+
+	if (result != 0)
+	{
+		logMessage(logger, ERROR_LOG_LEVEL,
+			"Failed to zip log file.");
+		return;
+	}
+
+	remove(filePath);
+}
 static void onRotationUpdate(void* argument)
 {
 	assert(argument);
@@ -132,53 +179,18 @@ static void onRotationUpdate(void* argument)
 			timeDelay = currentTime + logger->rotationTime;
 			unlockMutex(mutex);
 
-			size_t oldFilePathLength = strlen(oldFilePath);
-			size_t bufferSize = oldFilePathLength * 2 + 32;
-			char* buffer = malloc(bufferSize * sizeof(char));
-
-			if (!buffer)
-			{
-				logMessage(logger, ERROR_LOG_LEVEL,
-					"Failed to allocate an old log file zip string.");
-				free(oldFilePath);
-				return;
-			}
-
-			int count = snprintf(
-				buffer,
-				bufferSize,
-				"tar -czf %.*s.tar.gz %.*s",
-				(int)oldFilePathLength,
-				oldFilePath,
-				(int)oldFilePathLength,
-				oldFilePath);
-
-			if (count <= 0)
-			{
-				logMessage(logger, ERROR_LOG_LEVEL,
-					"Failed to write old log file zip string.");
-				free(buffer);
-				free(oldFilePath);
-				return;
-			}
-
-			int result = system(buffer);
-			free(buffer);
-
-			if (result != 0)
-			{
-				logMessage(logger, ERROR_LOG_LEVEL,
-					"Failed to zip old log file.");
-				free(oldFilePath);
-				return;
-			}
-
-			remove(oldFilePath);
+			compressLogFile(logger, oldFilePath);
 			free(oldFilePath);
 		}
 
 		sleepThread(0.001);
 	}
+
+	lockMutex(mutex);
+	closeFile(logger->logFile);
+	logger->logFile = NULL;
+	compressLogFile(logger, logger->filePath);
+	unlockMutex(mutex);
 }
 LogyResult createLogger(
 	const char* _directoryPath,
