@@ -35,42 +35,57 @@ struct Logger_T
 	bool logToStdout;
 };
 
-inline static char* createLogFilePath(const char* directoryPath)
+inline static char* createLogFilePath(
+	const char* directoryPath,
+	bool useRotation)
 {
 	assert(directoryPath);
 
-	time_t rawTime;
-	time(&rawTime);
+	const char* fileName;
+	int fileNameLength;
+
+	if (useRotation)
+	{
+		time_t rawTime;
+		time(&rawTime);
 
 #if __linux__ || __APPLE__
-	struct tm timeInfo =
-		*localtime(&rawTime);
+		struct tm timeInfo =
+			*localtime(&rawTime);
 #elif _WIN32
-	struct tm timeInfo;
+		struct tm timeInfo;
 
-	errno_t error = localtime_s(
-		&timeInfo,
-		&rawTime);
+		errno_t error = localtime_s(
+			&timeInfo,
+			&rawTime);
 
-	if (error != 0)
-		abort();
+		if (error != 0)
+			abort();
 #else
 #error Unknown operating system
 #endif
 
-	char nameBuffer[32];
+		char nameBuffer[32];
 
-	int fileNameLength = snprintf(nameBuffer, 32,
-		"log_%d-%02d-%02d_%02d-%02d-%02d.txt",
-		timeInfo.tm_year + 1900,
-		timeInfo.tm_mon + 1,
-		timeInfo.tm_mday,
-		timeInfo.tm_hour,
-		timeInfo.tm_min,
-		timeInfo.tm_sec);
+		fileNameLength = snprintf(nameBuffer, 32,
+			"log_%d-%02d-%02d_%02d-%02d-%02d.txt",
+			timeInfo.tm_year + 1900,
+			timeInfo.tm_mon + 1,
+			timeInfo.tm_mday,
+			timeInfo.tm_hour,
+			timeInfo.tm_min,
+			timeInfo.tm_sec);
 
-	if (fileNameLength <= 0)
-		return NULL;
+		if (fileNameLength <= 0)
+			return NULL;
+
+		fileName = nameBuffer;
+	}
+	else
+	{
+		fileName = "log.txt";
+		fileNameLength = 7;
+	}
 
 	size_t directoryPathLength = strlen(directoryPath);
 
@@ -84,7 +99,7 @@ inline static char* createLogFilePath(const char* directoryPath)
 		directoryPathLength * sizeof(char));
 	filePath[directoryPathLength] = '/';
 	memcpy(filePath + directoryPathLength + 1,
-		nameBuffer, fileNameLength * sizeof(char));
+		fileName, fileNameLength * sizeof(char));
 	filePath[directoryPathLength + 1 + fileNameLength] = '\0';
 	return filePath;
 }
@@ -151,7 +166,9 @@ static void onRotationUpdate(void* argument)
 		{
 			lockMutex(mutex);
 
-			char* newFilePath = createLogFilePath(directoryPath);
+			char* newFilePath = createLogFilePath(
+				directoryPath,
+				true);
 
 			if (!newFilePath)
 			{
@@ -236,7 +253,9 @@ LogyResult createLogger(
 
 	createDirectory(directoryPath);
 
-	char* filePath = createLogFilePath(directoryPath);
+	char* filePath = createLogFilePath(
+		directoryPath,
+		rotationTime > 0.0);
 
 	if (!filePath)
 	{
