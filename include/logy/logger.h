@@ -19,6 +19,11 @@
 #include <stdbool.h>
 
 /*
+ * Log file name without rotation.
+ */
+#define SOLO_LOG_FILE_NAME "log.txt"
+
+/*
  * Logger structure.
  */
 typedef struct Logger_T Logger_T;

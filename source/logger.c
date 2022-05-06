@@ -83,7 +83,7 @@ inline static char* createLogFilePath(
 	}
 	else
 	{
-		fileName = "log.txt";
+		fileName = SOLO_LOG_FILE_NAME;
 		fileNameLength = 7;
 	}
 
