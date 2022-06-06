@@ -9,6 +9,24 @@ A library providing generic API for messages logging across different platforms.
 * Log file rotation
 * Multithreading safety
 
+# Usage example
+```c
+Logger logger;
+
+LogyResult logyResult = createLogger(
+    "logs", INFO_LOG_LEVEL, true, 0.0, &logger);
+
+if (logyResult != SUCCESS_LOGY_RESULT)
+    abort();
+
+int someValue = 123;
+
+logMessage(logger, INFO_LOG_LEVEL,
+    "Logged value: %d", someValue);
+
+destroyLogger(logger);
+```
+
 ## Supported operating systems
 
 * Ubuntu
