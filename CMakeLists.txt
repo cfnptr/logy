@@ -42,7 +42,7 @@ add_subdirectory(libraries/mpmt)
 
 configure_file(
 	cmake/defines.h.in
-	logy/defines.h)
+	include/logy/defines.h)
 
 set(LOGY_SOURCES
 	source/logger.c)
@@ -55,7 +55,7 @@ add_library(logy-static STATIC
 target_link_libraries(logy-static PUBLIC
 	${LOGY_LINK_LIBRARIES})
 target_include_directories(logy-static PUBLIC
-	${PROJECT_BINARY_DIR}
+	${PROJECT_BINARY_DIR}/include
 	${PROJECT_SOURCE_DIR}/include)
 
 if (LOGY_BUILD_SHARED)
@@ -67,6 +67,6 @@ if (LOGY_BUILD_SHARED)
 	target_link_libraries(logy-shared PUBLIC
 		${LOGY_LINK_LIBRARIES})
 	target_include_directories(logy-shared PUBLIC
-		${PROJECT_BINARY_DIR}
+		${PROJECT_BINARY_DIR}/include
 		${PROJECT_SOURCE_DIR}/include)
 endif ()
