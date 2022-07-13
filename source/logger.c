@@ -214,6 +214,7 @@ LogyResult createLogger(
 	LogLevel level,
 	bool logToStdout,
 	double rotationTime,
+	bool isDataDirectory,
 	Logger* logger)
 {
 	assert(_directoryPath);
@@ -236,8 +237,59 @@ LogyResult createLogger(
 	assert(_directoryPath[directoryPathLength - 1] != '/' &&
 		_directoryPath[directoryPathLength - 1] != '\\');
 
-	char* directoryPath = malloc((1 +
-		directoryPathLength) * sizeof(char));
+	char* directoryPath;
+
+#if __APPLE__
+	if (isDataDirectory)
+	{
+		const char* dataDirectory = getDataDirectory(false);
+
+		if (!dataDirectory)
+		{
+			destroyLogger(loggerInstance);
+			return FAILED_TO_GET_DIRECTORY_LOGY_RESULT;
+		}
+
+		size_t dataDirectoryPathLength = strlen(dataDirectory);
+		size_t pathLength = dataDirectoryPathLength + directoryPathLength + 2;
+		directoryPath = malloc(pathLength * sizeof(char));
+
+		if (!directoryPath)
+		{
+			destroyLogger(loggerInstance);
+			return FAILED_TO_ALLOCATE_LOGY_RESULT;
+		}
+
+		loggerInstance->directoryPath = directoryPath;
+
+		memcpy(directoryPath, dataDirectory,
+			dataDirectoryPathLength * sizeof(char));
+		directoryPath[dataDirectoryPathLength] = '/';
+		memcpy(directoryPath + dataDirectoryPathLength + 1, _directoryPath,
+			directoryPathLength * sizeof(char));
+		directoryPath[dataDirectoryPathLength +
+			directoryPathLength + 1] = '\0';
+	}
+	else
+	{
+		size_t pathLength = directoryPathLength + 1;
+		directoryPath = malloc(pathLength * sizeof(char));
+
+		if (!directoryPath)
+		{
+			destroyLogger(loggerInstance);
+			return FAILED_TO_ALLOCATE_LOGY_RESULT;
+		}
+
+		loggerInstance->directoryPath = directoryPath;
+
+		memcpy(directoryPath, _directoryPath,
+			directoryPathLength * sizeof(char));
+		directoryPath[directoryPathLength] = '\0';
+	}
+#else
+	size_t pathLength = directoryPathLength + 1;
+	directoryPath = malloc(pathLength * sizeof(char));
 
 	if (!directoryPath)
 	{
@@ -250,6 +302,7 @@ LogyResult createLogger(
 	memcpy(directoryPath, _directoryPath,
 		directoryPathLength * sizeof(char));
 	directoryPath[directoryPathLength] = '\0';
+#endif
 
 	createDirectory(directoryPath);
 

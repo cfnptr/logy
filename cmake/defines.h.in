@@ -30,7 +30,8 @@ typedef enum LogyResult_T
 	SUCCESS_LOGY_RESULT = 0,
 	FAILED_TO_ALLOCATE_LOGY_RESULT = 1,
 	FAILED_TO_OPEN_FILE_LOGY_RESULT = 2,
-	LOGY_RESULT_COUNT = 3,
+	FAILED_TO_GET_DIRECTORY_LOGY_RESULT = 3,
+	LOGY_RESULT_COUNT = 4,
 } LogyResult_T;
 /*
  * LOGY result type.
@@ -64,6 +65,7 @@ static const char* const logyResultStrings[LOGY_RESULT_COUNT] = {
 	"Success",
 	"Failed to allocate",
 	"Failed to open file",
+	"Failed to get directory",
 };
 
 /*

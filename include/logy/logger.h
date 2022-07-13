@@ -40,6 +40,7 @@ typedef Logger_T* Logger;
  * level - logging level, inclusive.
  * logToConsole - also log to stdout.
  * rotationTime - log rotation delay time or 0. (seconds)
+ * isDataDirectory - write to data directory. (macOS)
  * logger - pointer to the logger instance.
  */
 LogyResult createLogger(
@@ -47,6 +48,7 @@ LogyResult createLogger(
 	LogLevel level,
 	bool logToStdout,
 	double rotationTime,
+	bool isDataDirectory,
 	Logger* logger);
 /*
  * Destroys logger instance.
