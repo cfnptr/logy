@@ -234,8 +234,9 @@ LogyResult createLogger(
 
 	size_t directoryPathLength = strlen(_directoryPath);
 
-	assert(_directoryPath[directoryPathLength - 1] != '/' &&
-		_directoryPath[directoryPathLength - 1] != '\\');
+	assert(directoryPathLength == 0 || (directoryPathLength > 0 &&
+		_directoryPath[directoryPathLength - 1] != '/' &&
+		_directoryPath[directoryPathLength - 1] != '\\'));
 
 	char* directoryPath;
 
@@ -267,8 +268,7 @@ LogyResult createLogger(
 		directoryPath[dataDirectoryPathLength] = '/';
 		memcpy(directoryPath + dataDirectoryPathLength + 1, _directoryPath,
 			directoryPathLength * sizeof(char));
-		directoryPath[dataDirectoryPathLength +
-			directoryPathLength + 1] = '\0';
+		directoryPath[dataDirectoryPathLength + directoryPathLength + 1] = '\0';
 	}
 	else
 	{
@@ -328,7 +328,7 @@ LogyResult createLogger(
 
 	loggerInstance->mutex = mutex;
 
-	FILE* logFile = openFile(filePath, "a");
+	FILE* logFile = openFile(filePath, "w");
 
 	if (!logFile)
 	{

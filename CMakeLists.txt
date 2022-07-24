@@ -50,8 +50,7 @@ set(LOGY_SOURCES
 set(LOGY_LINK_LIBRARIES
 	mpio-static mpmt-static)
 
-add_library(logy-static STATIC
-	${LOGY_SOURCES})
+add_library(logy-static STATIC ${LOGY_SOURCES})
 target_link_libraries(logy-static PUBLIC
 	${LOGY_LINK_LIBRARIES})
 target_include_directories(logy-static PUBLIC
@@ -59,8 +58,7 @@ target_include_directories(logy-static PUBLIC
 	${PROJECT_SOURCE_DIR}/include)
 
 if (LOGY_BUILD_SHARED)
-	add_library(logy-shared SHARED
-		${LOGY_SOURCES})
+	add_library(logy-shared SHARED ${LOGY_SOURCES})
 	set_target_properties(logy-shared PROPERTIES
 		OUTPUT_NAME "logy"
 		WINDOWS_EXPORT_ALL_SYMBOLS ON)
