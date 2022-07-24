@@ -11,7 +11,7 @@ A library providing generic API for messages logging across different platforms.
 
 # Usage example
 ```c
-loggerExample()
+void loggerExample()
 {
     Logger logger;
 
