@@ -22,6 +22,7 @@
 #include "mpmt/common.h"
 
 #include <time.h>
+#include <math.h>
 
 struct Logger_T
 {
@@ -482,15 +483,31 @@ void logVaMessage(
 #error Unknown operating system
 #endif
 
+	double clock = getCurrentClock();
+	int milliseconds = (int)((clock - floor(clock)) * 1000.0);
+
 	if (logger->logToStdout)
 	{
-		printf("[%d-%02d-%02d %02d:%02d:%02d] [%s]: ",
+		const char* color;
+
+		switch (level)
+		{
+		default: color = "\e[0;37m"; break;
+		case FATAL_LOG_LEVEL: color = "\e[0;31m"; break;
+		case ERROR_LOG_LEVEL: color = "\e[0;91m"; break;
+		case WARN_LOG_LEVEL: color = "\e[0;93m"; break;
+		case DEBUG_LOG_LEVEL: color = "\e[0;92m"; break;
+		case TRACE_LOG_LEVEL: color = "\e[0;94m"; break;
+		}
+
+		printf("[\e[0;90m%d-%02d-%02d %02d:%02d:%02d.%03d\e[0m] [%s%s\e[0m]: ",
 			timeInfo.tm_year + 1900,
 			timeInfo.tm_mon + 1,
 			timeInfo.tm_mday,
 			timeInfo.tm_hour,
 			timeInfo.tm_min,
 			timeInfo.tm_sec,
+			milliseconds, color,
 			logLevelToString(level));
 
 		va_list stdArgs;
@@ -505,13 +522,14 @@ void logVaMessage(
 	FILE* logFile = logger->logFile;
 
 	fprintf(logFile,
-		"[%d-%02d-%02d %02d:%02d:%02d] [%s]: ",
+		"[%d-%02d-%02d %02d:%02d:%02d.%03d] [%s]: ",
 		timeInfo.tm_year + 1900,
 		timeInfo.tm_mon + 1,
 		timeInfo.tm_mday,
 		timeInfo.tm_hour,
 		timeInfo.tm_min,
 		timeInfo.tm_sec,
+		milliseconds,
 		logLevelToString(level));
 
 	vfprintf(logFile, fmt, args);
