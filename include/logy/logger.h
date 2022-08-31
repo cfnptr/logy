@@ -93,9 +93,7 @@ LogLevel getLoggerLevel(Logger logger);
  * logger - logger instance.
  * level - message logging level.
  */
-void setLoggerLevel(
-	Logger logger,
-	LogLevel level);
+void setLoggerLevel(Logger logger, LogLevel level);
 
 /*
  * Returns current logger log to stdout state.
@@ -111,9 +109,7 @@ bool getLoggerLogToStdout(Logger logger);
  * logger - logger instance.
  * logToStdout - value.
  */
-void setLoggerLogToStdout(
-	Logger logger,
-	bool logToStdout);
+void setLoggerLogToStdout(Logger logger, bool logToStdout);
 
 /*
  * Log message to the log.

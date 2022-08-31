@@ -23,6 +23,8 @@
 
 #include <time.h>
 #include <math.h>
+#include <stdlib.h>
+#include <string.h>
 
 struct Logger_T
 {
@@ -37,8 +39,7 @@ struct Logger_T
 };
 
 inline static char* createLogFilePath(
-	const char* directoryPath,
-	bool useRotation)
+	const char* directoryPath, bool useRotation)
 {
 	assert(directoryPath);
 
@@ -51,16 +52,11 @@ inline static char* createLogFilePath(
 		time(&rawTime);
 
 #if __linux__ || __APPLE__
-		struct tm timeInfo =
-			*localtime(&rawTime);
+		struct tm timeInfo = *localtime(&rawTime);
 #elif _WIN32
 		struct tm timeInfo;
 
-		errno_t error = localtime_s(
-			&timeInfo,
-			&rawTime);
-
-		if (error != 0)
+		if (localtime_s(&timeInfo, &rawTime) != 0)
 			abort();
 #else
 #error Unknown operating system
@@ -96,8 +92,7 @@ inline static char* createLogFilePath(
 	if (!filePath)
 		return NULL;
 
-	memcpy(filePath, directoryPath,
-		directoryPathLength * sizeof(char));
+	memcpy(filePath, directoryPath, directoryPathLength * sizeof(char));
 	filePath[directoryPathLength] = '/';
 	memcpy(filePath + directoryPathLength + 1,
 		fileName, fileNameLength * sizeof(char));
@@ -167,9 +162,7 @@ static void onRotationUpdate(void* argument)
 		{
 			lockMutex(mutex);
 
-			char* newFilePath = createLogFilePath(
-				directoryPath,
-				true);
+			char* newFilePath = createLogFilePath(directoryPath, true);
 
 			if (!newFilePath)
 			{
@@ -223,8 +216,7 @@ LogyResult createLogger(
 	assert(rotationTime >= 0.0);
 	assert(logger);
 
-	Logger loggerInstance = calloc(
-		1, sizeof(Logger_T));
+	Logger loggerInstance = calloc(1, sizeof(Logger_T));
 
 	if (!loggerInstance)
 		return FAILED_TO_ALLOCATE_LOGY_RESULT;
@@ -264,8 +256,7 @@ LogyResult createLogger(
 
 		loggerInstance->directoryPath = directoryPath;
 
-		memcpy(directoryPath, dataDirectory,
-			dataDirectoryPathLength * sizeof(char));
+		memcpy(directoryPath, dataDirectory, dataDirectoryPathLength * sizeof(char));
 		directoryPath[dataDirectoryPathLength] = '/';
 		memcpy(directoryPath + dataDirectoryPathLength + 1, _directoryPath,
 			directoryPathLength * sizeof(char));
@@ -284,8 +275,7 @@ LogyResult createLogger(
 
 		loggerInstance->directoryPath = directoryPath;
 
-		memcpy(directoryPath, _directoryPath,
-			directoryPathLength * sizeof(char));
+		memcpy(directoryPath, _directoryPath, directoryPathLength * sizeof(char));
 		directoryPath[directoryPathLength] = '\0';
 	}
 #else
@@ -300,16 +290,13 @@ LogyResult createLogger(
 
 	loggerInstance->directoryPath = directoryPath;
 
-	memcpy(directoryPath, _directoryPath,
-		directoryPathLength * sizeof(char));
+	memcpy(directoryPath, _directoryPath, directoryPathLength * sizeof(char));
 	directoryPath[directoryPathLength] = '\0';
 #endif
 
 	createDirectory(directoryPath);
 
-	char* filePath = createLogFilePath(
-		directoryPath,
-		rotationTime > 0.0);
+	char* filePath = createLogFilePath(directoryPath, rotationTime > 0.0);
 
 	if (!filePath)
 	{
@@ -341,9 +328,7 @@ LogyResult createLogger(
 
 	if (rotationTime > 0.0)
 	{
-		Thread rotationThread = createThread(
-			onRotationUpdate,
-			loggerInstance);
+		Thread rotationThread = createThread(onRotationUpdate, loggerInstance);
 
 		if (!rotationThread)
 		{
@@ -413,9 +398,7 @@ LogLevel getLoggerLevel(Logger logger)
 	unlockMutex(mutex);
 	return level;
 }
-void setLoggerLevel(
-	Logger logger,
-	LogLevel level)
+void setLoggerLevel(Logger logger, LogLevel level)
 {
 	assert(logger);
 	assert(level <= ALL_LOG_LEVEL);
@@ -434,9 +417,7 @@ bool getLoggerLogToStdout(Logger logger)
 	unlockMutex(mutex);
 	return logToStdout;
 }
-void setLoggerLogToStdout(
-	Logger logger,
-	bool logToStdout)
+void setLoggerLogToStdout(Logger logger, bool logToStdout)
 {
 	assert(logger);
 	Mutex mutex = logger->mutex;
@@ -468,16 +449,11 @@ void logVaMessage(
 	time(&rawTime);
 
 #if __linux__ || __APPLE__
-	struct tm timeInfo =
-		*localtime(&rawTime);
+	struct tm timeInfo = *localtime(&rawTime);
 #elif _WIN32
 	struct tm timeInfo;
 
-	errno_t error = localtime_s(
-		&timeInfo,
-		&rawTime);
-
-	if (error != 0)
+	if (localtime_s(&timeInfo, &rawTime) != 0)
 		abort();
 #else
 #error Unknown operating system
@@ -546,15 +522,8 @@ void logMessage(
 	assert(logger);
 	assert(level < ALL_LOG_LEVEL);
 	assert(fmt);
-
 	va_list args;
 	va_start(args, fmt);
-
-	logVaMessage(
-		logger,
-		level,
-		fmt,
-		args);
-
+	logVaMessage(logger, level, fmt, args);
 	va_end(args);
 }
