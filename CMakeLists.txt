@@ -14,7 +14,7 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-if (${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
+if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 	message(FATAL_ERROR "Prevented in-tree build")
 endif ()
 
@@ -22,17 +22,16 @@ if (TARGET logy-static)
 	return()
 endif ()
 
-project(logy
-	VERSION 1.1.0
+project(logy VERSION 1.1.0 LANGUAGES C
 	DESCRIPTION "Yet another logging library"
-	HOMEPAGE_URL "https://github.com/cfnptr/logy"
-	LANGUAGES C)
+	HOMEPAGE_URL "https://github.com/cfnptr/logy")
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
 
 option(LOGY_BUILD_SHARED "Build LOGY shared library" ON)
 
+set(MPIO_BUILD_SHARED OFF CACHE BOOL "" FORCE)
 add_subdirectory(libraries/mpio)
 
 set(MPMT_BUILD_SHARED OFF CACHE BOOL "" FORCE)
@@ -40,31 +39,20 @@ set(MPMT_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(MPMT_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(libraries/mpmt)
 
-configure_file(
-	cmake/defines.h.in
-	include/logy/defines.h)
+configure_file(cmake/defines.h.in include/logy/defines.h)
 
-set(LOGY_SOURCES
-	source/logger.c)
-	
-set(LOGY_LINK_LIBRARIES
-	mpio-static mpmt-static)
+set(LOGY_SOURCES source/logger.c)
+set(LOGY_LINK_LIBS mpio-static mpmt-static)
+set(LOGY_INCLUDE_DIRS ${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include)
 
 add_library(logy-static STATIC ${LOGY_SOURCES})
-target_link_libraries(logy-static PUBLIC
-	${LOGY_LINK_LIBRARIES})
-target_include_directories(logy-static PUBLIC
-	${PROJECT_BINARY_DIR}/include
-	${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(logy-static PUBLIC ${LOGY_LINK_LIBS})
+target_include_directories(logy-static PUBLIC ${LOGY_INCLUDE_DIRS})
 
 if (LOGY_BUILD_SHARED)
 	add_library(logy-shared SHARED ${LOGY_SOURCES})
 	set_target_properties(logy-shared PROPERTIES
-		OUTPUT_NAME "logy"
-		WINDOWS_EXPORT_ALL_SYMBOLS ON)
-	target_link_libraries(logy-shared PUBLIC
-		${LOGY_LINK_LIBRARIES})
-	target_include_directories(logy-shared PUBLIC
-		${PROJECT_BINARY_DIR}/include
-		${PROJECT_SOURCE_DIR}/include)
+		OUTPUT_NAME "logy" WINDOWS_EXPORT_ALL_SYMBOLS ON)
+	target_link_libraries(logy-shared PUBLIC ${LOGY_LINK_LIBS})
+	target_include_directories(logy-shared PUBLIC ${LOGY_INCLUDE_DIRS})
 endif ()

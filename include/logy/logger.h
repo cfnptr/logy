@@ -44,12 +44,9 @@ typedef Logger_T* Logger;
  * logger - pointer to the logger instance.
  */
 LogyResult createLogger(
-	const char* directoryPath,
-	LogLevel level,
-	bool logToStdout,
-	double rotationTime,
-	bool isDataDirectory,
-	Logger* logger);
+	const char* directoryPath, LogLevel level,
+	bool logToStdout, double rotationTime,
+	bool isDataDirectory, Logger* logger);
 /*
  * Destroys logger instance.
  * logger - logger instance or NULL.
@@ -120,11 +117,8 @@ void setLoggerLogToStdout(Logger logger, bool logToStdout);
  * fmt - formatted message.
  * args - message arguments.
  */
-void logVaMessage(
-	Logger logger,
-	LogLevel level,
-	const char* fmt,
-	va_list args);
+void logVaMessage(Logger logger, LogLevel level,
+	const char* fmt, va_list args);
 /*
  * Log message to the log.
  * (Thread safe function)
@@ -134,8 +128,5 @@ void logVaMessage(
  * fmt - formatted message.
  * ... - message arguments.
  */
-void logMessage(
-	Logger logger,
-	LogLevel level,
-	const char* fmt,
-	...);
+void logMessage(Logger logger,
+	LogLevel level, const char* fmt, ...);

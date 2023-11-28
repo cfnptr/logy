@@ -13,13 +13,10 @@
 // limitations under the License.
 
 #include "logy/logger.h"
-
 #include "mpio/file.h"
 #include "mpio/directory.h"
-
 #include "mpmt/sync.h"
 #include "mpmt/thread.h"
-#include "mpmt/common.h"
 
 #include <time.h>
 #include <math.h>
@@ -55,27 +52,17 @@ inline static char* createLogFilePath(
 		struct tm timeInfo = *localtime(&rawTime);
 #elif _WIN32
 		struct tm timeInfo;
-
-		if (localtime_s(&timeInfo, &rawTime) != 0)
-			abort();
+		if (localtime_s(&timeInfo, &rawTime) != 0) abort();
 #else
 #error Unknown operating system
 #endif
-
 		char nameBuffer[32];
-
 		fileNameLength = snprintf(nameBuffer, 32,
 			"log_%d-%02d-%02d_%02d-%02d-%02d.txt",
-			timeInfo.tm_year + 1900,
-			timeInfo.tm_mon + 1,
-			timeInfo.tm_mday,
-			timeInfo.tm_hour,
-			timeInfo.tm_min,
-			timeInfo.tm_sec);
-
-		if (fileNameLength <= 0)
-			return NULL;
-
+			timeInfo.tm_year + 1900, timeInfo.tm_mon + 1,
+			timeInfo.tm_mday, timeInfo.tm_hour,
+			timeInfo.tm_min, timeInfo.tm_sec);
+		if (fileNameLength <= 0) return NULL;
 		fileName = nameBuffer;
 	}
 	else
@@ -88,9 +75,7 @@ inline static char* createLogFilePath(
 
 	char* filePath = malloc((2 +
 		directoryPathLength + fileNameLength) * sizeof(char));
-
-	if (!filePath)
-		return NULL;
+	if (!filePath) return NULL;
 
 	memcpy(filePath, directoryPath, directoryPathLength * sizeof(char));
 	filePath[directoryPathLength] = '/';
@@ -117,14 +102,10 @@ inline static void compressLogFile(
 		return;
 	}
 
-	int count = snprintf(
-		buffer,
-		bufferSize,
+	int count = snprintf(buffer, bufferSize,
 		"tar -czf %.*s.tar.gz %.*s",
-		(int)filePathLength,
-		filePath,
-		(int)filePathLength,
-		filePath);
+		(int)filePathLength, filePath,
+		(int)filePathLength, filePath);
 
 	if (count <= 0)
 	{
@@ -163,7 +144,6 @@ static void onRotationUpdate(void* argument)
 			lockMutex(mutex);
 
 			char* newFilePath = createLogFilePath(directoryPath, true);
-
 			if (!newFilePath)
 			{
 				unlockMutex(mutex);
@@ -173,7 +153,6 @@ static void onRotationUpdate(void* argument)
 			}
 
 			FILE* newLogFile = openFile(newFilePath, "a");
-
 			if (!newLogFile)
 			{
 				unlockMutex(mutex);
@@ -204,12 +183,9 @@ static void onRotationUpdate(void* argument)
 	unlockMutex(mutex);
 }
 LogyResult createLogger(
-	const char* _directoryPath,
-	LogLevel level,
-	bool logToStdout,
-	double rotationTime,
-	bool isDataDirectory,
-	Logger* logger)
+	const char* _directoryPath, LogLevel level,
+	bool logToStdout, double rotationTime,
+	bool isDataDirectory, Logger* logger)
 {
 	assert(_directoryPath);
 	assert(level < LOG_LEVEL_COUNT);
@@ -217,9 +193,7 @@ LogyResult createLogger(
 	assert(logger);
 
 	Logger loggerInstance = calloc(1, sizeof(Logger_T));
-
-	if (!loggerInstance)
-		return FAILED_TO_ALLOCATE_LOGY_RESULT;
+	if (!loggerInstance) return FAILED_TO_ALLOCATE_LOGY_RESULT;
 
 	loggerInstance->rotationTime = rotationTime;
 	loggerInstance->level = level;
@@ -237,7 +211,6 @@ LogyResult createLogger(
 	if (isDataDirectory)
 	{
 		const char* dataDirectory = getDataDirectory(false);
-
 		if (!dataDirectory)
 		{
 			destroyLogger(loggerInstance);
@@ -246,8 +219,8 @@ LogyResult createLogger(
 
 		size_t dataDirectoryPathLength = strlen(dataDirectory);
 		size_t pathLength = dataDirectoryPathLength + directoryPathLength + 2;
-		directoryPath = malloc(pathLength * sizeof(char));
 
+		directoryPath = malloc(pathLength * sizeof(char));
 		if (!directoryPath)
 		{
 			destroyLogger(loggerInstance);
@@ -265,8 +238,8 @@ LogyResult createLogger(
 	else
 	{
 		size_t pathLength = directoryPathLength + 1;
-		directoryPath = malloc(pathLength * sizeof(char));
 
+		directoryPath = malloc(pathLength * sizeof(char));
 		if (!directoryPath)
 		{
 			destroyLogger(loggerInstance);
@@ -297,7 +270,6 @@ LogyResult createLogger(
 	createDirectory(directoryPath);
 
 	char* filePath = createLogFilePath(directoryPath, rotationTime > 0.0);
-
 	if (!filePath)
 	{
 		destroyLogger(loggerInstance);
@@ -307,7 +279,6 @@ LogyResult createLogger(
 	loggerInstance->filePath = filePath;
 
 	Mutex mutex = createMutex();
-
 	if (!mutex)
 	{
 		destroyLogger(loggerInstance);
@@ -317,7 +288,6 @@ LogyResult createLogger(
 	loggerInstance->mutex = mutex;
 
 	FILE* logFile = openFile(filePath, "w");
-
 	if (!logFile)
 	{
 		destroyLogger(loggerInstance);
@@ -329,7 +299,6 @@ LogyResult createLogger(
 	if (rotationTime > 0.0)
 	{
 		Thread rotationThread = createThread(onRotationUpdate, loggerInstance);
-
 		if (!rotationThread)
 		{
 			destroyLogger(loggerInstance);
@@ -348,11 +317,9 @@ LogyResult createLogger(
 }
 void destroyLogger(Logger logger)
 {
-	if (!logger)
-		return;
+	if (!logger) return;
 
 	Thread rotationThread = logger->rotationThread;
-
 	if (rotationThread)
 	{
 		logger->rotationTime = 0.0;
@@ -360,8 +327,7 @@ void destroyLogger(Logger logger)
 		destroyThread(rotationThread);
 	}
 
-	if (logger->logFile)
-		closeFile(logger->logFile);
+	if (logger->logFile) closeFile(logger->logFile);
 
 	destroyMutex(logger->mutex);
 	free(logger->filePath);
@@ -426,11 +392,8 @@ void setLoggerLogToStdout(Logger logger, bool logToStdout)
 	unlockMutex(mutex);
 }
 
-void logVaMessage(
-	Logger logger,
-	LogLevel level,
-	const char* fmt,
-	va_list args)
+void logVaMessage(Logger logger, LogLevel level,
+	const char* fmt, va_list args)
 {
 	assert(logger);
 	assert(level < ALL_LOG_LEVEL);
@@ -452,9 +415,7 @@ void logVaMessage(
 	struct tm timeInfo = *localtime(&rawTime);
 #elif _WIN32
 	struct tm timeInfo;
-
-	if (localtime_s(&timeInfo, &rawTime) != 0)
-		abort();
+	if (localtime_s(&timeInfo, &rawTime) != 0) abort();
 #else
 #error Unknown operating system
 #endif
@@ -477,14 +438,10 @@ void logVaMessage(
 		}
 
 		printf("[\e[0;90m%d-%02d-%02d %02d:%02d:%02d.%03d\e[0m] [%s%s\e[0m]: ",
-			timeInfo.tm_year + 1900,
-			timeInfo.tm_mon + 1,
-			timeInfo.tm_mday,
-			timeInfo.tm_hour,
-			timeInfo.tm_min,
-			timeInfo.tm_sec,
-			milliseconds, color,
-			logLevelToString(level));
+			timeInfo.tm_year + 1900, timeInfo.tm_mon + 1,
+			timeInfo.tm_mday, timeInfo.tm_hour,
+			timeInfo.tm_min, timeInfo.tm_sec,
+			milliseconds, color, logLevelToString(level));
 
 		va_list stdArgs;
 		va_copy(stdArgs, args);
@@ -497,27 +454,19 @@ void logVaMessage(
 
 	FILE* logFile = logger->logFile;
 
-	fprintf(logFile,
-		"[%d-%02d-%02d %02d:%02d:%02d.%03d] [%s]: ",
-		timeInfo.tm_year + 1900,
-		timeInfo.tm_mon + 1,
-		timeInfo.tm_mday,
-		timeInfo.tm_hour,
-		timeInfo.tm_min,
-		timeInfo.tm_sec,
-		milliseconds,
-		logLevelToString(level));
+	fprintf(logFile, "[%d-%02d-%02d %02d:%02d:%02d.%03d] [%s]: ",
+		timeInfo.tm_year + 1900, timeInfo.tm_mon + 1,
+		timeInfo.tm_mday, timeInfo.tm_hour,
+		timeInfo.tm_min, timeInfo.tm_sec,
+		milliseconds, logLevelToString(level));
 
 	vfprintf(logFile, fmt, args);
 	fputc('\n', logFile);
 	fflush(logFile);
 	unlockMutex(mutex);
 }
-void logMessage(
-	Logger logger,
-	LogLevel level,
-	const char* fmt,
-	...)
+void logMessage(Logger logger,
+	LogLevel level, const char* fmt, ...)
 {
 	assert(logger);
 	assert(level < ALL_LOG_LEVEL);
