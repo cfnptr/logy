@@ -1,4 +1,4 @@
-# Copyright 2021-2022 Nikita Fediuchin. All rights reserved.
+# Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -42,8 +42,9 @@ add_subdirectory(libraries/mpmt)
 configure_file(cmake/defines.h.in include/logy/defines.h)
 
 set(LOGY_SOURCES source/logger.c)
+set(LOGY_INCLUDE_DIRS ${PROJECT_BINARY_DIR}/include
+	${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/wrappers/cpp)
 set(LOGY_LINK_LIBS mpio-static mpmt-static)
-set(LOGY_INCLUDE_DIRS ${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include)
 
 add_library(logy-static STATIC ${LOGY_SOURCES})
 target_link_libraries(logy-static PUBLIC ${LOGY_LINK_LIBS})

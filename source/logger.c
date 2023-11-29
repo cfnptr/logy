@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "logy/logger.h"
+#include "mpio/os.h"
 #include "mpio/file.h"
 #include "mpio/directory.h"
 #include "mpmt/sync.h"
@@ -22,6 +23,16 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+
+#if _WIN32
+#define ANSI_NAME_COLOR ""
+#define ANSI_RESET_COLOR ""
+#else
+#define ANSI_NAME_COLOR "\e[0;90m"
+#define ANSI_RESET_COLOR "\e[0m"
+#endif
+
+// TODO: use ENABLE_VIRTUAL_TERMINAL_PROCESSING on windows
 
 struct Logger_T
 {
@@ -52,7 +63,7 @@ inline static char* createLogFilePath(
 		struct tm timeInfo = *localtime(&rawTime);
 #elif _WIN32
 		struct tm timeInfo;
-		if (localtime_s(&timeInfo, &rawTime) != 0) abort();
+		if (gmtime_s(&timeInfo, &rawTime) != 0) abort();
 #else
 #error Unknown operating system
 #endif
@@ -207,7 +218,6 @@ LogyResult createLogger(
 
 	char* directoryPath;
 
-#if __APPLE__
 	if (isDataDirectory)
 	{
 		const char* dataDirectory = getDataDirectory(false);
@@ -251,21 +261,6 @@ LogyResult createLogger(
 		memcpy(directoryPath, _directoryPath, directoryPathLength * sizeof(char));
 		directoryPath[directoryPathLength] = '\0';
 	}
-#else
-	size_t pathLength = directoryPathLength + 1;
-	directoryPath = malloc(pathLength * sizeof(char));
-
-	if (!directoryPath)
-	{
-		destroyLogger(loggerInstance);
-		return FAILED_TO_ALLOCATE_LOGY_RESULT;
-	}
-
-	loggerInstance->directoryPath = directoryPath;
-
-	memcpy(directoryPath, _directoryPath, directoryPathLength * sizeof(char));
-	directoryPath[directoryPathLength] = '\0';
-#endif
 
 	createDirectory(directoryPath);
 
@@ -392,8 +387,7 @@ void setLoggerLogToStdout(Logger logger, bool logToStdout)
 	unlockMutex(mutex);
 }
 
-void logVaMessage(Logger logger, LogLevel level,
-	const char* fmt, va_list args)
+void logVaMessage(Logger logger, LogLevel level, const char* fmt, va_list args)
 {
 	assert(logger);
 	assert(level < ALL_LOG_LEVEL);
@@ -415,7 +409,7 @@ void logVaMessage(Logger logger, LogLevel level,
 	struct tm timeInfo = *localtime(&rawTime);
 #elif _WIN32
 	struct tm timeInfo;
-	if (localtime_s(&timeInfo, &rawTime) != 0) abort();
+	if (gmtime_s(&timeInfo, &rawTime) != 0) abort();
 #else
 #error Unknown operating system
 #endif
@@ -423,10 +417,15 @@ void logVaMessage(Logger logger, LogLevel level,
 	double clock = getCurrentClock();
 	int milliseconds = (int)((clock - floor(clock)) * 1000.0);
 
+	char threadName[16];
+	getThreadName(threadName, 16);
+
 	if (logger->logToStdout)
 	{
+#if _WIN32
+		const char* color = "";
+#else
 		const char* color;
-
 		switch (level)
 		{
 		default: color = "\e[0;37m"; break;
@@ -436,12 +435,15 @@ void logVaMessage(Logger logger, LogLevel level,
 		case DEBUG_LOG_LEVEL: color = "\e[0;92m"; break;
 		case TRACE_LOG_LEVEL: color = "\e[0;94m"; break;
 		}
+#endif
 
-		printf("[\e[0;90m%d-%02d-%02d %02d:%02d:%02d.%03d\e[0m] [%s%s\e[0m]: ",
+		printf("[" ANSI_NAME_COLOR "%d-%02d-%02d %02d:%02d:%02d.%03d"
+			ANSI_RESET_COLOR "] [" ANSI_NAME_COLOR "%s"
+			ANSI_RESET_COLOR "] [%s%s" ANSI_RESET_COLOR "]: ",
 			timeInfo.tm_year + 1900, timeInfo.tm_mon + 1,
 			timeInfo.tm_mday, timeInfo.tm_hour,
-			timeInfo.tm_min, timeInfo.tm_sec,
-			milliseconds, color, logLevelToString(level));
+			timeInfo.tm_min, timeInfo.tm_sec, milliseconds,
+			threadName, color, logLevelToString(level));
 
 		va_list stdArgs;
 		va_copy(stdArgs, args);
@@ -454,19 +456,18 @@ void logVaMessage(Logger logger, LogLevel level,
 
 	FILE* logFile = logger->logFile;
 
-	fprintf(logFile, "[%d-%02d-%02d %02d:%02d:%02d.%03d] [%s]: ",
+	fprintf(logFile, "[%d-%02d-%02d %02d:%02d:%02d.%03d] [%s] [%s]: ",
 		timeInfo.tm_year + 1900, timeInfo.tm_mon + 1,
 		timeInfo.tm_mday, timeInfo.tm_hour,
-		timeInfo.tm_min, timeInfo.tm_sec,
-		milliseconds, logLevelToString(level));
+		timeInfo.tm_min, timeInfo.tm_sec, milliseconds,
+		threadName, logLevelToString(level));
 
 	vfprintf(logFile, fmt, args);
 	fputc('\n', logFile);
 	fflush(logFile);
 	unlockMutex(mutex);
 }
-void logMessage(Logger logger,
-	LogLevel level, const char* fmt, ...)
+void logMessage(Logger logger, LogLevel level, const char* fmt, ...)
 {
 	assert(logger);
 	assert(level < ALL_LOG_LEVEL);

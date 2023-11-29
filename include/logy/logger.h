@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ typedef Logger_T* Logger;
  * level - logging level, inclusive.
  * logToConsole - also log to stdout.
  * rotationTime - log rotation delay time or 0. (seconds)
- * isDataDirectory - write to data directory. (macOS)
+ * isDataDirectory - write to data directory.
  * logger - pointer to the logger instance.
  */
 LogyResult createLogger(
@@ -54,38 +54,29 @@ LogyResult createLogger(
 void destroyLogger(Logger logger);
 
 /*
- * Returns logger directory path string.
- * (Thread safe function)
- *
+ * Returns logger directory path string. (MT-Safe)
  * logger - logger instance.
  */
 const char* getLoggerDirectoryPath(Logger logger);
 /*
- * Returns logger file path string.
- * (Thread safe function)
- *
+ * Returns logger file path string. (MT-Safe)
  * logger - logger instance.
  */
 const char* getLoggerFilePath(Logger logger);
 /*
- * Returns current logger rotation delay time. (seconds)
- * (Thread safe function)
- *
+ * Returns current logger rotation delay time in seconds. (MT-Safe)
  * logger - logger instance.
  */
 double getLoggerRotationTime(Logger logger);
 
 /*
- * Returns current logger logging level.
- * (Thread safe function)
- *
+ * Returns current logger logging level. (MT-Safe)
  * logger - logger instance.
  */
 LogLevel getLoggerLevel(Logger logger);
 /*
- * Set logger logging level.
+ * Set logger logging level. (MT-Safe)
  * Log only message <= log level.
- * (Thread safe function)
  *
  * logger - logger instance.
  * level - message logging level.
@@ -93,15 +84,12 @@ LogLevel getLoggerLevel(Logger logger);
 void setLoggerLevel(Logger logger, LogLevel level);
 
 /*
- * Returns current logger log to stdout state.
- * (Thread safe function)
- *
+ * Returns current logger log to stdout state. (MT-Safe)
  * logger - logger instance.
  */
 bool getLoggerLogToStdout(Logger logger);
 /*
- * Log messages also to stdout.
- * (Thread safe function)
+ * Set log messages to stdout. (MT-Safe)
  *
  * logger - logger instance.
  * logToStdout - value.
@@ -109,24 +97,20 @@ bool getLoggerLogToStdout(Logger logger);
 void setLoggerLogToStdout(Logger logger, bool logToStdout);
 
 /*
- * Log message to the log.
- * (Thread safe function)
+ * Log message to the log. (MT-Safe)
  *
  * logger - logger instance.
  * level - message logging level.
  * fmt - formatted message.
  * args - message arguments.
  */
-void logVaMessage(Logger logger, LogLevel level,
-	const char* fmt, va_list args);
+void logVaMessage(Logger logger, LogLevel level, const char* fmt, va_list args);
 /*
- * Log message to the log.
- * (Thread safe function)
+ * Log message to the log. (MT-Safe)
  *
  * logger - logger instance.
  * level - message logging level.
  * fmt - formatted message.
  * ... - message arguments.
  */
-void logMessage(Logger logger,
-	LogLevel level, const char* fmt, ...);
+void logMessage(Logger logger, LogLevel level, const char* fmt, ...);

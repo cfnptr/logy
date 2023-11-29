@@ -8,6 +8,7 @@ A library providing generic API for messages logging across different platforms.
 * Logging levels (fatal - trace)
 * Log file rotation
 * Multithreading safety
+* C++ wrapper
 
 # Usage example
 ```c
