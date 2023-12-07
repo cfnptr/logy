@@ -169,9 +169,10 @@ namespace logy
 		 */
 		void log(LogLevel level, const string& fmt, ...)
 		{
+			auto _fmt = fmt.c_str();
 			va_list args;
-			va_start(args, fmt.c_str());
-			logVaMessage(instance, level, fmt.c_str(), args);
+			va_start(args, _fmt);
+			logVaMessage(instance, level, _fmt, args);
 			va_end(args);
 		}
 	};
