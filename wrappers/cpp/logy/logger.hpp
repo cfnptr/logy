@@ -152,11 +152,11 @@ namespace logy
 		 * fmt - formatted message.
 		 * args - message arguments.
 		 */
-		void log(LogLevel level, const string& fmt, va_list args)
+		void log(LogLevel level, const char* fmt, va_list args)
 		{
 			va_list stdArgs;
 			va_copy(stdArgs, args);
-			logVaMessage(instance, level, fmt.c_str(), stdArgs);
+			logVaMessage(instance, level, fmt, stdArgs);
 			va_end(stdArgs);
 		}
 		/*
@@ -167,12 +167,11 @@ namespace logy
 		 * fmt - formatted message.
 		 * ... - message arguments.
 		 */
-		void log(LogLevel level, const string& fmt, ...)
+		void log(LogLevel level, const char* fmt, ...)
 		{
-			auto _fmt = fmt.c_str();
 			va_list args;
-			va_start(args, _fmt);
-			logVaMessage(instance, level, _fmt, args);
+			va_start(args, fmt);
+			logVaMessage(instance, level, fmt, args);
 			va_end(args);
 		}
 	};
