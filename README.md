@@ -2,6 +2,8 @@
 
 A [library](https://github.com/cfnptr/logy) providing generic API for messages **logging** across different platforms.
 
+See the [documentation](https://cfnptr.github.io/logy)
+
 ## Features
 
 * Logging to file, stdout
