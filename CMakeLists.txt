@@ -22,7 +22,7 @@ if (TARGET logy-static)
 	return()
 endif ()
 
-project(logy VERSION 1.1.0 LANGUAGES C
+project(logy VERSION 1.1.1 LANGUAGES C
 	DESCRIPTION "Yet another logging library"
 	HOMEPAGE_URL "https://github.com/cfnptr/logy")
 
