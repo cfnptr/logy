@@ -14,7 +14,7 @@ See the [documentation](https://cfnptr.github.io/logy)
 
 # Usage example
 
-```c
+```cpp
 void loggerExampleCPP()
 {
     logy::Logger logger("logs", INFO_LOG_LEVEL);
