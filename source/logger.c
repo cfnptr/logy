@@ -1,4 +1,4 @@
-// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2024 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -220,7 +220,7 @@ LogyResult createLogger(
 
 	if (isDataDirectory)
 	{
-		const char* dataDirectory = getDataDirectory(false);
+		char* dataDirectory = getDataDirectory(false);
 		if (!dataDirectory)
 		{
 			destroyLogger(loggerInstance);
@@ -244,6 +244,7 @@ LogyResult createLogger(
 		memcpy(directoryPath + dataDirectoryPathLength + 1, _directoryPath,
 			directoryPathLength * sizeof(char));
 		directoryPath[dataDirectoryPathLength + directoryPathLength + 1] = '\0';
+		free(dataDirectory);
 	}
 	else
 	{

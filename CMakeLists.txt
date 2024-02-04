@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
+# Copyright 2021-2024 Nikita Fediuchin. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ set(CMAKE_C_STANDARD_REQUIRED TRUE)
 option(LOGY_BUILD_SHARED "Build LOGY shared library" ON)
 
 set(MPIO_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(MPIO_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 add_subdirectory(libraries/mpio)
 
 set(MPMT_BUILD_SHARED OFF CACHE BOOL "" FORCE)
