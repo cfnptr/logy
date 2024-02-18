@@ -46,8 +46,7 @@ struct Logger_T
 	bool logToStdout;
 };
 
-inline static char* createLogFilePath(
-	const char* directoryPath, bool useRotation)
+inline static char* createLogFilePath(const char* directoryPath, bool useRotation)
 {
 	assert(directoryPath);
 
@@ -84,14 +83,12 @@ inline static char* createLogFilePath(
 
 	size_t directoryPathLength = strlen(directoryPath);
 
-	char* filePath = malloc((2 +
-		directoryPathLength + fileNameLength) * sizeof(char));
+	char* filePath = malloc((2 + directoryPathLength + fileNameLength) * sizeof(char));
 	if (!filePath) return NULL;
 
 	memcpy(filePath, directoryPath, directoryPathLength * sizeof(char));
 	filePath[directoryPathLength] = '/';
-	memcpy(filePath + directoryPathLength + 1,
-		fileName, fileNameLength * sizeof(char));
+	memcpy(filePath + directoryPathLength + 1, fileName, fileNameLength * sizeof(char));
 	filePath[directoryPathLength + 1 + fileNameLength] = '\0';
 	return filePath;
 }
@@ -108,20 +105,16 @@ inline static void compressLogFile(
 
 	if (!buffer)
 	{
-		logMessage(logger, ERROR_LOG_LEVEL,
-			"Failed to allocate a log file zip string.");
+		logMessage(logger, ERROR_LOG_LEVEL, "Failed to allocate a log file zip string.");
 		return;
 	}
 
-	int count = snprintf(buffer, bufferSize,
-		"tar -czf %.*s.tar.gz %.*s",
-		(int)filePathLength, filePath,
-		(int)filePathLength, filePath);
+	int count = snprintf(buffer, bufferSize, "tar -czf %.*s.tar.gz %.*s",
+		(int)filePathLength, filePath, (int)filePathLength, filePath);
 
 	if (count <= 0)
 	{
-		logMessage(logger, ERROR_LOG_LEVEL,
-			"Failed to write log file zip string.");
+		logMessage(logger, ERROR_LOG_LEVEL, "Failed to write log file zip string.");
 		free(buffer);
 		return;
 	}
@@ -131,8 +124,7 @@ inline static void compressLogFile(
 
 	if (result != 0)
 	{
-		logMessage(logger, ERROR_LOG_LEVEL,
-			"Failed to zip log file.");
+		logMessage(logger, ERROR_LOG_LEVEL, "Failed to zip log file.");
 		return;
 	}
 
@@ -158,8 +150,7 @@ static void onRotationUpdate(void* argument)
 			if (!newFilePath)
 			{
 				unlockMutex(mutex);
-				logMessage(logger, ERROR_LOG_LEVEL,
-					"Failed to allocate a new log file path string.");
+				logMessage(logger, ERROR_LOG_LEVEL, "Failed to allocate a new log file path string.");
 				return;
 			}
 
@@ -167,8 +158,7 @@ static void onRotationUpdate(void* argument)
 			if (!newLogFile)
 			{
 				unlockMutex(mutex);
-				logMessage(logger, ERROR_LOG_LEVEL,
-					"Failed to open a new log file.");
+				logMessage(logger, ERROR_LOG_LEVEL, "Failed to open a new log file.");
 				free(newFilePath);
 				return;
 			}
@@ -196,7 +186,7 @@ static void onRotationUpdate(void* argument)
 LogyResult createLogger(
 	const char* _directoryPath, LogLevel level,
 	bool logToStdout, double rotationTime,
-	bool isDataDirectory, Logger* logger)
+	bool isAppDataDirectory, Logger* logger)
 {
 	assert(_directoryPath);
 	assert(level < LOG_LEVEL_COUNT);
@@ -217,46 +207,25 @@ LogyResult createLogger(
 		_directoryPath[directoryPathLength - 1] != '\\'));
 
 	char* directoryPath;
-
-	if (isDataDirectory)
+	if (isAppDataDirectory)
 	{
-		char* dataDirectory = getDataDirectory(false);
-		if (!dataDirectory)
+		char* directoryPath = getAppDataDirectory(_directoryPath, false);
+		if (!directoryPath)
 		{
 			destroyLogger(loggerInstance);
 			return FAILED_TO_GET_DIRECTORY_LOGY_RESULT;
 		}
-
-		size_t dataDirectoryPathLength = strlen(dataDirectory);
-		size_t pathLength = dataDirectoryPathLength + directoryPathLength + 2;
-
-		directoryPath = malloc(pathLength * sizeof(char));
-		if (!directoryPath)
-		{
-			destroyLogger(loggerInstance);
-			return FAILED_TO_ALLOCATE_LOGY_RESULT;
-		}
-
 		loggerInstance->directoryPath = directoryPath;
-
-		memcpy(directoryPath, dataDirectory, dataDirectoryPathLength * sizeof(char));
-		directoryPath[dataDirectoryPathLength] = '/';
-		memcpy(directoryPath + dataDirectoryPathLength + 1, _directoryPath,
-			directoryPathLength * sizeof(char));
-		directoryPath[dataDirectoryPathLength + directoryPathLength + 1] = '\0';
-		free(dataDirectory);
 	}
 	else
 	{
 		size_t pathLength = directoryPathLength + 1;
-
 		directoryPath = malloc(pathLength * sizeof(char));
 		if (!directoryPath)
 		{
 			destroyLogger(loggerInstance);
 			return FAILED_TO_ALLOCATE_LOGY_RESULT;
 		}
-
 		loggerInstance->directoryPath = directoryPath;
 
 		memcpy(directoryPath, _directoryPath, directoryPathLength * sizeof(char));
@@ -271,7 +240,6 @@ LogyResult createLogger(
 		destroyLogger(loggerInstance);
 		return FAILED_TO_ALLOCATE_LOGY_RESULT;
 	}
-
 	loggerInstance->filePath = filePath;
 
 	Mutex mutex = createMutex();
@@ -280,7 +248,6 @@ LogyResult createLogger(
 		destroyLogger(loggerInstance);
 		return FAILED_TO_ALLOCATE_LOGY_RESULT;
 	}
-
 	loggerInstance->mutex = mutex;
 
 	FILE* logFile = openFile(filePath, "w");
@@ -289,7 +256,6 @@ LogyResult createLogger(
 		destroyLogger(loggerInstance);
 		return FAILED_TO_OPEN_FILE_LOGY_RESULT;
 	}
-
 	loggerInstance->logFile = logFile;
 
 	if (rotationTime > 0.0)
@@ -300,7 +266,6 @@ LogyResult createLogger(
 			destroyLogger(loggerInstance);
 			return FAILED_TO_ALLOCATE_LOGY_RESULT;
 		}
-
 		loggerInstance->rotationThread = rotationThread;
 	}
 	else

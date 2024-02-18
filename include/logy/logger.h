@@ -47,8 +47,8 @@ typedef Logger_T* Logger;
  * @brief Creates a new logger instance.
  * 
  * @details
- * Opens a new file stream to write logging messages. Log rotation is a process used to manage log files by 
- * periodically archiving or rotating them to prevent them from becoming too large and consuming excessive disk space. 
+ * Opens a new file stream to write logging messages. Log rotation is a process used to manage log files 
+ * by periodically archiving them to prevent from becoming too large and consuming excessive disk space. 
  * 
  * @note You should destroy created logger instance manually.
  *
@@ -56,7 +56,7 @@ typedef Logger_T* Logger;
  * @param level logging level, inclusive
  * @param logToConsole duplicate messages to the stdout
  * @param rotationTime log rotation delay time or 0 (in seconds)
- * @param isDataDirectory write to data directory
+ * @param isAppDataDirectory write to app data directory
  * @param[out] logger pointer to the logger instance
  * 
  * @return The @ref LogyResult code and writes logger instance on success.
@@ -67,7 +67,7 @@ typedef Logger_T* Logger;
  * @retval FAILED_TO_OPEN_FILE_LOGY_RESULT if failed to open file
  */
 LogyResult createLogger(const char* directoryPath, LogLevel level,
-	bool logToStdout, double rotationTime, bool isDataDirectory, Logger* logger);
+	bool logToStdout, double rotationTime, bool isAppDataDirectory, Logger* logger);
 
 /**
  * @brief Destroys logger instance.
@@ -89,6 +89,11 @@ const char* getLoggerFilePath(Logger logger);
 
 /**
  * @brief Returns current logger rotation delay time in seconds. (MT-Safe)
+ * 
+ * @details
+ * After the time expires, the current log file will be closed and 
+ * compressed, a new file stream for the log file will be created.
+ * 
  * @param logger logger instance
  */
 double getLoggerRotationTime(Logger logger);

@@ -66,16 +66,16 @@ namespace logy
 		 * @param level logging level, inclusive
 		 * @param logToConsole also log to stdout.
 		 * @param rotationTime log rotation delay time or 0 (in seconds)
-		 * @param isDataDirectory write to data directory
+		 * @param isAppDataDirectory write to app data directory
 		 * 
 		 * @throw runtime_error with a @ref LogyResult string on failure.
 		 */
 		Logger(const filesystem::path& directoryPath, LogLevel level = ALL_LOG_LEVEL,
-			bool logToStdout = true, double rotationTime = 0.0, bool isDataDirectory = true)
+			bool logToStdout = true, double rotationTime = 0.0, bool isAppDataDirectory = true)
 		{
 			auto string = directoryPath.generic_string();
 			auto result = createLogger(string.c_str(), level,
-				logToStdout, rotationTime, isDataDirectory, &instance);
+				logToStdout, rotationTime, isAppDataDirectory, &instance);
 			if (result != SUCCESS_LOGY_RESULT)
 			{
 				throw runtime_error(logyResultToString(result) +
@@ -97,17 +97,17 @@ namespace logy
 		 * @param level logging level, inclusive
 		 * @param logToConsole also log to stdout.
 		 * @param rotationTime log rotation delay time or 0 (in seconds)
-		 * @param isDataDirectory write to data directory
+		 * @param isAppDataDirectory write to app data directory
 		 * 
 		 * @throw runtime_error with a @ref LogyResult string on failure.
 		 */
 		void open(const filesystem::path& directoryPath, LogLevel level = ALL_LOG_LEVEL,
-			bool logToStdout = true, double rotationTime = 0.0, bool isDataDirectory = true)
+			bool logToStdout = true, double rotationTime = 0.0, bool isAppDataDirectory = true)
 		{
 			destroyLogger(instance);
 			auto string = directoryPath.generic_string();
 			auto result = createLogger(string.c_str(), level,
-				logToStdout, rotationTime, isDataDirectory, &instance);
+				logToStdout, rotationTime, isAppDataDirectory, &instance);
 			if (result != SUCCESS_LOGY_RESULT)
 			{
 				throw runtime_error(logyResultToString(result) +
