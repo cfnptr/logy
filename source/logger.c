@@ -209,7 +209,7 @@ LogyResult createLogger(
 	char* directoryPath;
 	if (isAppDataDirectory)
 	{
-		char* directoryPath = getAppDataDirectory(_directoryPath, false);
+		directoryPath = getAppDataDirectory(_directoryPath, false);
 		if (!directoryPath)
 		{
 			destroyLogger(loggerInstance);
