@@ -57,7 +57,14 @@ Use building [instructions](BUILDING.md) to install all required tools and libra
 
 | Name              | Description               | Default value |
 |-------------------|---------------------------|---------------|
-| LOGY_BUILD_SHARED | Build LOGY shared library | `ON`          |
+| LOGY_BUILD_SHARED | Build Logy shared library | `ON`          |
+
+### CMake targets
+
+| Name        | Description          | Windows | macOS    | Linux |
+|-------------|----------------------|---------|----------|-------|
+| logy-static | Static Logy library  | `.lib`  | `.a`     | `.a`  |
+| logy-shared | Dynamic Logy library | `.dll`  | `.dylib` | `.so` |
 
 ## Cloning
 
