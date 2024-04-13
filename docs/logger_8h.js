@@ -3,7 +3,7 @@ var logger_8h =
     [ "SOLO_LOG_FILE_NAME", "logger_8h.html#a0915b92fedf86fdf7e076bf6278d8fd5", null ],
     [ "Logger_T", "logger_8h.html#afb6eaa9d2ea4d56d8150a612183f2663", null ],
     [ "Logger", "logger_8h.html#a4be197bc08ec96c8d99e361a16ff727f", null ],
-    [ "createLogger", "logger_8h.html#a2988e9bc022c224c053fac0737d31421", null ],
+    [ "createLogger", "logger_8h.html#abf0d4afba9b3a8e1d9c5d7df0528a0bf", null ],
     [ "destroyLogger", "logger_8h.html#a4f20ad7e3271049f2917c68f4d00e3db", null ],
     [ "getLoggerDirectoryPath", "logger_8h.html#aab4cc7a8e0413aef149f91eb434debb3", null ],
     [ "getLoggerFilePath", "logger_8h.html#ae0e6305e318d69bffa628cb82aa6d476", null ],

@@ -58,13 +58,13 @@ namespace logy
 			return *this;
 		}
 
-		/***********************************************************************************************************************
+		/*******************************************************************************************************************
 		 * @brief Creates a new logger instance.
 		 * @details See the @ref createLogger().
 		 *
 		 * @param[in] directoryPath logs directory path string
 		 * @param level logging level, inclusive
-		 * @param logToConsole also log to stdout.
+		 * @param logToStdout duplicate messages to the stdout
 		 * @param rotationTime log rotation delay time or 0 (in seconds)
 		 * @param isAppDataDirectory write to app data directory
 		 * 
@@ -95,7 +95,7 @@ namespace logy
 		 *
 		 * @param[in] directoryPath logs directory path string
 		 * @param level logging level, inclusive
-		 * @param logToConsole also log to stdout.
+		 * @param logToStdout duplicate messages to the stdout
 		 * @param rotationTime log rotation delay time or 0 (in seconds)
 		 * @param isAppDataDirectory write to app data directory
 		 * 
@@ -131,7 +131,7 @@ namespace logy
 		 */
 		bool isOpen() const noexcept { return instance; }
 
-		/***********************************************************************************************************************
+		/*******************************************************************************************************************
 		 * @brief Returns logger directory path string. (MT-Safe)
 		 * @details See the @ref getLoggerDirectoryPath().
 		 */
@@ -180,7 +180,6 @@ namespace logy
 		/**
 		 * @brief Returns current logger log to stdout state. (MT-Safe)
 		 * @details See the @ref getLoggerLogToStdout().
-		 * @param logger logger instance
 		 */
 		bool getLogToStdout() noexcept
 		{
@@ -190,7 +189,7 @@ namespace logy
 		/**
 		 * @brief Sets log messages to stdout. (MT-Safe)
 		 * @details See the @ref setLoggerLogToStdout().
-		 * @param logToStdout logToStdout value
+		 * @param value logToStdout value
 		 */
 		void setLogToStdout(bool value) noexcept
 		{

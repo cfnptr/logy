@@ -57,6 +57,7 @@ $(function(){initNavTree('index.html',''); initResizable(); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md__r_e_a_d_m_e"></a> A <a href="https://github.com/cfnptr/logy">library</a> providing generic API for messages <b>logging</b> across different platforms.</p>
+<p>See the <a href="https://cfnptr.github.io/logy">documentation</a></p>
 <h1><a class="anchor" id="features"></a>
 Features</h1>
 <ul>
@@ -79,7 +80,7 @@ Usage example</h1>
 </div><!-- fragment --><div class="fragment"><div class="line"><span class="keywordtype">void</span> loggerExampleC()</div>
 <div class="line">{</div>
 <div class="line">    <a class="code hl_typedef" href="logger_8h.html#a4be197bc08ec96c8d99e361a16ff727f">Logger</a> logger;</div>
-<div class="line">    <a class="code hl_typedef" href="common_8h.html#a00e916a95dd858baf5b7f926e68cbbdf">LogyResult</a> logyResult = <a class="code hl_function" href="logger_8h.html#a2988e9bc022c224c053fac0737d31421">createLogger</a>(<span class="stringliteral">&quot;logs&quot;</span>, INFO_LOG_LEVEL, <span class="keyword">true</span>, 0.0, &amp;logger);</div>
+<div class="line">    <a class="code hl_typedef" href="common_8h.html#a00e916a95dd858baf5b7f926e68cbbdf">LogyResult</a> logyResult = <a class="code hl_function" href="logger_8h.html#abf0d4afba9b3a8e1d9c5d7df0528a0bf">createLogger</a>(<span class="stringliteral">&quot;logs&quot;</span>, INFO_LOG_LEVEL, <span class="keyword">true</span>, 0.0, &amp;logger);</div>
 <div class="line">    <span class="keywordflow">if</span> (logyResult != SUCCESS_LOGY_RESULT) abort();</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordtype">int</span> someValue = 123;</div>
@@ -88,9 +89,9 @@ Usage example</h1>
 <div class="line">    <a class="code hl_function" href="logger_8h.html#a4f20ad7e3271049f2917c68f4d00e3db">destroyLogger</a>(logger);</div>
 <div class="line">}</div>
 <div class="ttc" id="acommon_8h_html_a00e916a95dd858baf5b7f926e68cbbdf"><div class="ttname"><a href="common_8h.html#a00e916a95dd858baf5b7f926e68cbbdf">LogyResult</a></div><div class="ttdeci">uint8_t LogyResult</div><div class="ttdoc">Logy result code type.</div><div class="ttdef"><b>Definition</b> common.h:38</div></div>
-<div class="ttc" id="alogger_8h_html_a2988e9bc022c224c053fac0737d31421"><div class="ttname"><a href="logger_8h.html#a2988e9bc022c224c053fac0737d31421">createLogger</a></div><div class="ttdeci">LogyResult createLogger(const char *directoryPath, LogLevel level, bool logToStdout, double rotationTime, bool isDataDirectory, Logger *logger)</div><div class="ttdoc">Creates a new logger instance.</div></div>
 <div class="ttc" id="alogger_8h_html_a4be197bc08ec96c8d99e361a16ff727f"><div class="ttname"><a href="logger_8h.html#a4be197bc08ec96c8d99e361a16ff727f">Logger</a></div><div class="ttdeci">Logger_T * Logger</div><div class="ttdoc">Logger instance.</div><div class="ttdef"><b>Definition</b> logger.h:44</div></div>
 <div class="ttc" id="alogger_8h_html_a4f20ad7e3271049f2917c68f4d00e3db"><div class="ttname"><a href="logger_8h.html#a4f20ad7e3271049f2917c68f4d00e3db">destroyLogger</a></div><div class="ttdeci">void destroyLogger(Logger logger)</div><div class="ttdoc">Destroys logger instance.</div></div>
+<div class="ttc" id="alogger_8h_html_abf0d4afba9b3a8e1d9c5d7df0528a0bf"><div class="ttname"><a href="logger_8h.html#abf0d4afba9b3a8e1d9c5d7df0528a0bf">createLogger</a></div><div class="ttdeci">LogyResult createLogger(const char *directoryPath, LogLevel level, bool logToStdout, double rotationTime, bool isAppDataDirectory, Logger *logger)</div><div class="ttdoc">Creates a new logger instance.</div></div>
 <div class="ttc" id="alogger_8h_html_adc5c7b4402ef98fe2c0f8ebd5ee4af85"><div class="ttname"><a href="logger_8h.html#adc5c7b4402ef98fe2c0f8ebd5ee4af85">logMessage</a></div><div class="ttdeci">void logMessage(Logger logger, LogLevel level, const char *fmt,...)</div><div class="ttdoc">Logs message to the log. (MT-Safe)</div></div>
 </div><!-- fragment --><h2><a class="anchor" id="supported-operating-systems"></a>
 Supported operating systems</h2>
@@ -114,7 +115,17 @@ CMake options</h3>
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">Name   </th><th class="markdownTableHeadNone">Description   </th><th class="markdownTableHeadNone">Default value    </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">LOGY_BUILD_SHARED   </td><td class="markdownTableBodyNone">Build LOGY shared library   </td><td class="markdownTableBodyNone"><code>ON</code>   </td></tr>
+<td class="markdownTableBodyNone">LOGY_BUILD_SHARED   </td><td class="markdownTableBodyNone">Build Logy shared library   </td><td class="markdownTableBodyNone"><code>ON</code>   </td></tr>
+</table>
+<h3><a class="anchor" id="cmake-targets"></a>
+CMake targets</h3>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Name   </th><th class="markdownTableHeadNone">Description   </th><th class="markdownTableHeadNone">Windows   </th><th class="markdownTableHeadNone">macOS   </th><th class="markdownTableHeadNone">Linux    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">logy-static   </td><td class="markdownTableBodyNone">Static Logy library   </td><td class="markdownTableBodyNone"><code>.lib</code>   </td><td class="markdownTableBodyNone"><code>.a</code>   </td><td class="markdownTableBodyNone"><code>.a</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">logy-shared   </td><td class="markdownTableBodyNone">Dynamic Logy library   </td><td class="markdownTableBodyNone"><code>.dll</code>   </td><td class="markdownTableBodyNone"><code>.dylib</code>   </td><td class="markdownTableBodyNone"><code>.so</code>   </td></tr>
 </table>
 <h2><a class="anchor" id="cloning"></a>
 Cloning</h2>
@@ -138,7 +149,7 @@ Third-party</h2>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Sun Feb 4 2024 for Logy by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.10.0 </li>
+    <li class="footer">Generated on Sat Apr 13 2024 for Logy by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.10.0 </li>
   </ul>
 </div>
 </body>

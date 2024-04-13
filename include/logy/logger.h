@@ -54,7 +54,7 @@ typedef Logger_T* Logger;
  *
  * @param[in] directoryPath logs directory path string
  * @param level logging level, inclusive
- * @param logToConsole duplicate messages to the stdout
+ * @param logToStdout duplicate messages to the stdout
  * @param rotationTime log rotation delay time or 0 (in seconds)
  * @param isAppDataDirectory write to app data directory
  * @param[out] logger pointer to the logger instance

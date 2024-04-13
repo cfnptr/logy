@@ -1,9 +1,9 @@
 var classlogy_1_1_logger =
 [
     [ "Logger", "classlogy_1_1_logger.html#aef8052bbf4d54842d72662ee4c1ed930", null ],
-    [ "Logger", "classlogy_1_1_logger.html#ac0ba81baa02b21158e60e336c4e5551b", null ],
+    [ "Logger", "classlogy_1_1_logger.html#af8bc5875e71341a74c1642682901775d", null ],
     [ "~Logger", "classlogy_1_1_logger.html#a0d77f27eb95c246d555904aaf08018eb", null ],
-    [ "open", "classlogy_1_1_logger.html#a12bd0da8b96db01a43350693d0155be8", null ],
+    [ "open", "classlogy_1_1_logger.html#a23b0e71eecf39beeb74aa2d9e41997b3", null ],
     [ "close", "classlogy_1_1_logger.html#a2ead8fad3dd09d3a8b03e6c948f14e46", null ],
     [ "isOpen", "classlogy_1_1_logger.html#a96abf7edb0d2aadf1f49db0c873861bb", null ],
     [ "getDirectoryPath", "classlogy_1_1_logger.html#ac3ae22d51f97ce43c88b77ac5344bed6", null ],
