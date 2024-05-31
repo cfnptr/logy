@@ -5,13 +5,13 @@
   xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
       http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
-    <loc>https://cfnptr.github.io/logy/logger_8h.html</loc>
+    <loc>https://cfnptr.github.io/logy/logger_8hpp.html</loc>
   </url>
   <url>
     <loc>https://cfnptr.github.io/logy/common_8h.html</loc>
   </url>
   <url>
-    <loc>https://cfnptr.github.io/logy/logger_8hpp.html</loc>
+    <loc>https://cfnptr.github.io/logy/logger_8h.html</loc>
   </url>
   <url>
     <loc>https://cfnptr.github.io/logy/md__b_u_i_l_d_i_n_g.html</loc>
