@@ -369,12 +369,12 @@ void logVaMessage(Logger logger, LogLevel level, const char* fmt, va_list args)
 	}
 
 	time_t rawTime;
+	struct tm timeInfo;
 	time(&rawTime);
 
 #if __linux__ || __APPLE__
-	struct tm timeInfo = *localtime(&rawTime);
+	if (!gmtime_r(&rawTime, &timeInfo)) abort();
 #elif _WIN32
-	struct tm timeInfo;
 	if (gmtime_s(&timeInfo, &rawTime) != 0) abort();
 #else
 #error Unknown operating system
