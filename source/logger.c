@@ -133,6 +133,8 @@ inline static void compressLogFile(
 static void onRotationUpdate(void* argument)
 {
 	assert(argument);
+	setThreadName("LOG");
+
 	Logger logger = (Logger)argument;
 	Mutex mutex = logger->mutex;
 	const char* directoryPath = logger->directoryPath;
