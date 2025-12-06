@@ -52,21 +52,22 @@ inline static char* createLogFilePath(const char* directoryPath, bool useRotatio
 
 	const char* fileName;
 	int fileNameLength;
+	char nameBuffer[32];
 
 	if (useRotation)
 	{
 		time_t rawTime;
 		time(&rawTime);
 
-#if __linux__ || __APPLE__
+		#if __linux__ || __APPLE__
 		struct tm timeInfo = *localtime(&rawTime);
-#elif _WIN32
+		#elif _WIN32
 		struct tm timeInfo;
 		if (gmtime_s(&timeInfo, &rawTime) != 0) abort();
-#else
-#error Unknown operating system
-#endif
-		char nameBuffer[32];
+		#else
+		#error Unknown operating system
+		#endif
+
 		fileNameLength = snprintf(nameBuffer, 32,
 			"log_%d-%02d-%02d_%02d-%02d-%02d.txt",
 			timeInfo.tm_year + 1900, timeInfo.tm_mon + 1,
@@ -374,13 +375,13 @@ void logVaMessage(Logger logger, LogLevel level, const char* fmt, va_list args)
 	struct tm timeInfo;
 	time(&rawTime);
 
-#if __linux__ || __APPLE__
+	#if __linux__ || __APPLE__
 	if (!gmtime_r(&rawTime, &timeInfo)) abort();
-#elif _WIN32
+	#elif _WIN32
 	if (gmtime_s(&timeInfo, &rawTime) != 0) abort();
-#else
-#error Unknown operating system
-#endif
+	#else
+	#error Unknown operating system
+	#endif
 
 	double clock = getCurrentClock();
 	int milliseconds = (int)((clock - floor(clock)) * 1000.0);
@@ -390,9 +391,9 @@ void logVaMessage(Logger logger, LogLevel level, const char* fmt, va_list args)
 
 	if (logger->logToStdout)
 	{
-#if _WIN32
+		#if _WIN32
 		const char* color = "";
-#else
+		#else
 		const char* color;
 		switch (level)
 		{
@@ -403,7 +404,7 @@ void logVaMessage(Logger logger, LogLevel level, const char* fmt, va_list args)
 		case DEBUG_LOG_LEVEL: color = "\e[0;92m"; break;
 		case TRACE_LOG_LEVEL: color = "\e[0;94m"; break;
 		}
-#endif
+		#endif
 
 		printf("[" ANSI_NAME_COLOR "%d-%02d-%02d %02d:%02d:%02d.%03d"
 			ANSI_RESET_COLOR "] [" ANSI_NAME_COLOR "%s"
