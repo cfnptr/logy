@@ -21,6 +21,23 @@
 #include <stdint.h>
 #include <assert.h>
 
+// Note: Using defines here because of preprocessor.
+
+#define OFF_LOG_LEVEL 0
+#define FATAL_LOG_LEVEL 1
+#define ERROR_LOG_LEVEL 2
+#define WARN_LOG_LEVEL 3
+#define INFO_LOG_LEVEL 4
+#define DEBUG_LOG_LEVEL 5
+#define TRACE_LOG_LEVEL 6
+#define ALL_LOG_LEVEL 7
+#define LOG_LEVEL_COUNT 8
+
+/**
+ * @brief Log level type.
+ */
+typedef uint8_t LogLevel;
+
 /**
  * @brief Logy result codes.
  */
@@ -36,26 +53,6 @@ typedef enum LogyResult_T
  * @brief Logy result code type.
  */
 typedef uint8_t LogyResult;
-
-/**
- * @brief Log levels.
- */
-typedef enum LogLevel_T
-{
-	OFF_LOG_LEVEL = 0,
-	FATAL_LOG_LEVEL = 1,
-	ERROR_LOG_LEVEL = 2,
-	WARN_LOG_LEVEL = 3,
-	INFO_LOG_LEVEL = 4,
-	DEBUG_LOG_LEVEL = 5,
-	TRACE_LOG_LEVEL = 6,
-	ALL_LOG_LEVEL = 7,
-	LOG_LEVEL_COUNT = 8,
-} LogLevel_T;
-/**
- * @brief Log level type.
- */
-typedef uint8_t LogLevel;
 
 /**
  * @brief Logy result code string array.
