@@ -1,4 +1,4 @@
-// Copyright 2021-2025 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2026 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
  * Logging is a crucial aspect of software development, as it provides a way to capture information about the 
  * program's behavior, errors, warnings, and other events. The primary purposes of using a logger in 
  * programming include debugging, monitoring, and analyzing the application's runtime behavior.
- **********************************************************************************************************************/
+ */
 
 #pragma once
 #include "logy/common.h"
@@ -75,7 +75,7 @@ LogyResult createLogger(const char* directoryPath, LogLevel level,
  */
 void destroyLogger(Logger logger);
 
-/**
+/***********************************************************************************************************************
  * @brief Returns logger directory path string. (MT-Safe)
  * @param logger logger instance
  */

@@ -1,4 +1,4 @@
-// Copyright 2021-2025 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2026 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ struct Logger_T
 	bool logToStdout;
 };
 
+//**********************************************************************************************************************
 inline static char* createLogFilePath(const char* directoryPath, bool useRotation)
 {
 	assert(directoryPath);
@@ -131,6 +132,8 @@ inline static void compressLogFile(
 
 	remove(filePath);
 }
+
+//**********************************************************************************************************************
 static void onRotationUpdate(void* argument)
 {
 	assert(argument);
@@ -186,6 +189,8 @@ static void onRotationUpdate(void* argument)
 	compressLogFile(logger, logger->filePath);
 	unlockMutex(mutex);
 }
+
+//**********************************************************************************************************************
 LogyResult createLogger(
 	const char* _directoryPath, LogLevel level,
 	bool logToStdout, double rotationTime,
@@ -299,6 +304,7 @@ void destroyLogger(Logger logger)
 	free(logger);
 }
 
+//**********************************************************************************************************************
 const char* getLoggerDirectoryPath(Logger logger)
 {
 	assert(logger);
@@ -356,6 +362,7 @@ void setLoggerLogToStdout(Logger logger, bool logToStdout)
 	unlockMutex(mutex);
 }
 
+//**********************************************************************************************************************
 void logVaMessage(Logger logger, LogLevel level, const char* fmt, va_list args)
 {
 	assert(logger);
