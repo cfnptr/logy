@@ -38,7 +38,6 @@ namespace logy
  */
 class Logger final
 {
-private:
 	Logger_T* instance = nullptr;
 public:
 	/**

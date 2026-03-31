@@ -94,9 +94,7 @@ inline static char* createLogFilePath(const char* directoryPath, bool useRotatio
 	filePath[directoryPathLength + 1 + fileNameLength] = '\0';
 	return filePath;
 }
-inline static void compressLogFile(
-	Logger logger,
-	const char* filePath)
+inline static void compressLogFile(Logger logger, const char* filePath)
 {
 	assert(logger);
 	assert(filePath);
@@ -191,10 +189,8 @@ static void onRotationUpdate(void* argument)
 }
 
 //**********************************************************************************************************************
-LogyResult createLogger(
-	const char* _directoryPath, LogLevel level,
-	bool logToStdout, double rotationTime,
-	bool isAppDataDirectory, Logger* logger)
+LogyResult createLogger(const char* _directoryPath, LogLevel level, bool logToStdout,
+	double rotationTime, bool isAppDataDirectory, Logger* logger)
 {
 	assert(_directoryPath);
 	assert(level < LOG_LEVEL_COUNT);
