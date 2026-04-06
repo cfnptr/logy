@@ -11,6 +11,7 @@ See the [documentation](https://cfnptr.github.io/logy)
 * Log file rotation
 * Multithreading safety
 * C and C++ implementations
+* Supports Windows, macOS and Linux
 
 # Usage example
 
@@ -38,20 +39,11 @@ void loggerExampleC()
 }
 ```
 
-## Supported operating systems
-
-* Windows (10/11)
-* Ubuntu (22.04/24.04)
-* macOS (15/26)
-
-This list includes only those systems on which functionality testing is conducted.
-However, you can also compile it under any other Linux distribution or operating system.
-
 ## Build requirements
 
 * C99 compiler
 * C++17 compiler (optional)
-* [Git 2.30+](https://git-scm.com/)
+* [Git 2.53+](https://git-scm.com/)
 * [CMake 3.16+](https://cmake.org/)
 
 Use building [instructions](BUILDING.md) to install all required tools and libraries.
@@ -72,13 +64,13 @@ Use building [instructions](BUILDING.md) to install all required tools and libra
 ## Cloning
 
 ```
-git clone --recursive https://github.com/cfnptr/logy
+git clone --recursive -j8 https://github.com/cfnptr/logy
 ```
 
 ## Building ![CI](https://github.com/cfnptr/logy/actions/workflows/cmake.yml/badge.svg)
 
 * Windows: ```./scripts/build-release.bat```
-* macOS / Ubuntu: ```./scripts/build-release.sh```
+* macOS / Linux: ```./scripts/build-release.sh```
 
 ## Third-party
 
