@@ -189,33 +189,33 @@ public:
 
 	/**
 	 * @brief Logs message to the log. (MT-Safe)
-	 * @details See the @ref logVaMessage().
+	 * @details See the @ref logMessageVA().
 	 *
 	 * @param level message logging level
-	 * @param[in] fmt formatted message
+	 * @param[in] fmt formatted message string
 	 * @param args message arguments
 	 */
 	void log(LogLevel level, const char* fmt, va_list args) noexcept
 	{
 		va_list stdArgs;
 		va_copy(stdArgs, args);
-		logVaMessage(instance, level, fmt, stdArgs);
+		logMessageVA(instance, level, fmt, stdArgs);
 		va_end(stdArgs);
 	}
 
 	/**
 	 * @brief Logs message to the log. (MT-Safe)
-	 * @details See the @ref logVaMessage().
+	 * @details See the @ref logMessageVA().
 	 *
 	 * @param level message logging level
-	 * @param[in] fmt formatted message
+	 * @param[in] fmt formatted message string
 	 * @param ... message arguments
 	 */
 	void log(LogLevel level, const char* fmt, ...) noexcept
 	{
 		va_list args;
 		va_start(args, fmt);
-		logVaMessage(instance, level, fmt, args);
+		logMessageVA(instance, level, fmt, args);
 		va_end(args);
 	}
 };

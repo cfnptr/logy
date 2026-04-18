@@ -133,17 +133,17 @@ void setLoggerLogToStdout(Logger logger, bool logToStdout);
  *
  * @param logger logger instance
  * @param level message logging level
- * @param[in] fmt formatted message
+ * @param[in] fmt formatted message string
  * @param args message arguments
  */
-void logVaMessage(Logger logger, LogLevel level, const char* fmt, va_list args);
+void logMessageVA(Logger logger, LogLevel level, const char* fmt, va_list args);
 
 /**
  * @brief Logs message to the log. (MT-Safe)
  *
  * @param logger logger instance
  * @param level message logging level
- * @param[in] fmt formatted message
+ * @param[in] fmt formatted message string
  * @param ... message arguments
  */
 void logMessage(Logger logger, LogLevel level, const char* fmt, ...);

@@ -359,7 +359,7 @@ void setLoggerLogToStdout(Logger logger, bool logToStdout)
 }
 
 //**********************************************************************************************************************
-void logVaMessage(Logger logger, LogLevel level, const char* fmt, va_list args)
+void logMessageVA(Logger logger, LogLevel level, const char* fmt, va_list args)
 {
 	assert(logger);
 	assert(level < ALL_LOG_LEVEL);
@@ -446,6 +446,6 @@ void logMessage(Logger logger, LogLevel level, const char* fmt, ...)
 	assert(fmt);
 	va_list args;
 	va_start(args, fmt);
-	logVaMessage(logger, level, fmt, args);
+	logMessageVA(logger, level, fmt, args);
 	va_end(args);
 }
