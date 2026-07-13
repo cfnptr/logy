@@ -12,6 +12,6 @@ var logger_8h =
     [ "setLoggerLevel", "logger_8h.html#a07fa538de617e374b2017c99351b7bcb", null ],
     [ "getLoggerLogToStdout", "logger_8h.html#a3b0db0305ef59234844af70d769e25f5", null ],
     [ "setLoggerLogToStdout", "logger_8h.html#a40280c95b5323594240f2f38d6d81901", null ],
-    [ "logVaMessage", "logger_8h.html#a710c59cbd694da7bcaff66d5121180e1", null ],
+    [ "logMessageVA", "logger_8h.html#a86d93f86f2317b285c8ecf84841c736c", null ],
     [ "logMessage", "logger_8h.html#adc5c7b4402ef98fe2c0f8ebd5ee4af85", null ]
 ];
